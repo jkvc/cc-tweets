@@ -4,7 +4,7 @@ import string
 from collections import Counter
 from glob import glob
 from os.path import exists, join
-from typing import Dict, List
+from typing import List
 
 import validators
 from config import DATA_DIR, RAW_DIR
@@ -14,14 +14,11 @@ from tqdm import tqdm
 
 from cc_tweets.utils import ParallelHandler, load_pkl, save_pkl
 
-DOWNSIZE_FACTOR = 10
+DOWNSIZE_FACTOR = 100
+FILTER_UNK = False
 SAVE_PATH = join(
     DATA_DIR,
-    (
-        f"tweets_downsized{DOWNSIZE_FACTOR}.pkl"
-        if DOWNSIZE_FACTOR > 1
-        else f"tweets_full.pkl"
-    ),
+    f"tweets_downsized{DOWNSIZE_FACTOR}{'_filtered' if FILTER_UNK else '_unfiltered'}.pkl",
 )
 
 STOPWORDS = stopwords.words("english")
@@ -82,7 +79,7 @@ def get_tweets_from_raw(jsonl_path):
         tweet = json.loads(line)
         tweet = get_data_from_raw_tweet(tweet)
         stance = userid2stance[tweet["user"]["id_str"]]
-        if stance == "unk":
+        if stance == "unk" and FILTER_UNK:
             continue
 
         text = tweet["full_text"]
