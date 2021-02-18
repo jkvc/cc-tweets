@@ -1,10 +1,12 @@
 import json
 import pickle
 import shutil
+from multiprocessing import Pool, cpu_count
 from os import mkdir
 from typing import List
 
 from genericpath import exists
+from tqdm import tqdm
 
 
 def read_txt_as_str_list(filepath: str) -> List[str]:
@@ -55,3 +57,29 @@ def mkdir_overwrite(path: str):
     if exists(path):
         shutil.rmtree(path)
     mkdir(path)
+
+
+class ParallelHandler:
+    def __init__(self, f):
+        self.f = f
+
+    def f_wrapper(self, param):
+        if isinstance(param, tuple) or isinstance(param, list):
+            return self.f(*param)
+        else:
+            return self.f(param)
+
+    def run(self, params, num_procs=(cpu_count()), desc=None, quiet=False):
+        pool = Pool(
+            processes=num_procs,
+        )
+        rets = list(
+            tqdm(
+                pool.imap_unordered(self.f_wrapper, params),
+                total=len(params),
+                desc=desc,
+                disable=quiet,
+            )
+        )
+        pool.close()
+        return rets
