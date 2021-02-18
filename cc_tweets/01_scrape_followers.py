@@ -175,7 +175,7 @@ def scrape_follower(username: str, auth: Auth):
 
 
 if __name__ == "__main__":
-    profiles = read_txt_as_str_list(join(DATA_DIR, "profiles_all.txt"))
+    profiles = read_txt_as_str_list(join(DATA_DIR, "profiles", "profiles_all.txt"))
     print(len(profiles))
     profiles = [user.lower() for user in profiles if not is_complete(user)]
     print(len(profiles))

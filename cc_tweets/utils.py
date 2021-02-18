@@ -69,7 +69,9 @@ class ParallelHandler:
         else:
             return self.f(param)
 
-    def run(self, params, num_procs=(cpu_count()), desc=None, quiet=False):
+    def run(
+        self, params, num_procs=(cpu_count()), desc=None, quiet=False, flatten=False
+    ):
         pool = Pool(
             processes=num_procs,
         )
@@ -82,4 +84,7 @@ class ParallelHandler:
             )
         )
         pool.close()
+
+        if flatten:
+            rets = [i for l in rets for i in l]
         return rets
