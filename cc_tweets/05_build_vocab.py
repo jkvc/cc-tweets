@@ -12,7 +12,7 @@ from cc_tweets.utils import load_pkl, write_str_list_as_txt
 
 SRC_DATASET_NAME = "tweets_downsized100_unfiltered"
 PKL_PATH = join(DATA_DIR, f"{SRC_DATASET_NAME}.pkl")
-TOP_N = 20000
+TOP_N = 3000
 NGRAM = 1
 SAVE_PATH = join(DATA_DIR, f"vocab_{TOP_N}_{NGRAM}gram.txt")
 

@@ -105,6 +105,11 @@ def get_all_tweets_from_raw_tweets():
     all_jsonl_paths = sorted(glob(join(RAW_DIR, "tweets", "*.jsonl")))
     handler = ParallelHandler(get_tweets_from_raw)
     all_tweets = handler.run(all_jsonl_paths, flatten=True)
+
+    # dedup
+    id2tweets = {t["id"]: t for t in all_tweets}
+    all_tweets = list(id2tweets.values())
+
     return all_tweets
 
 

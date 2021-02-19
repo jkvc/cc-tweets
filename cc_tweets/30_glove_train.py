@@ -11,9 +11,9 @@ from tqdm import tqdm
 from cc_tweets.data_utils import load_vocab2idx
 from cc_tweets.utils import load_pkl
 
-SRC_DATASET_NAME = "tweets_downsized100_unfiltered"
+SRC_DATASET_NAME = "tweets_downsized10_filtered"
 PKL_PATH = join(DATA_DIR, f"{SRC_DATASET_NAME}.pkl")
-VOCAB_PATH = join(DATA_DIR, "vocab_20000_1gram.txt")
+VOCAB_PATH = join(DATA_DIR, "vocab_3000_1gram.txt")
 EMB_DIM = 50
 SAVE_EMB_PATH = join(DATA_DIR, f"glove.{EMB_DIM}.csv")
 
@@ -42,6 +42,8 @@ if __name__ == "__main__":
     tweets = load_pkl(PKL_PATH)
     vocab2idx = load_vocab2idx(VOCAB_PATH)
     coocc = build_coocc_matrix(tweets, vocab2idx)
+
+    del tweets
 
     glove_model = GloVe(EMB_DIM, max_iter=5000, learning_rate=0.1)
     embeddings = glove_model.fit(coocc)
