@@ -1,22 +1,14 @@
-import json
-import re
-import string
 from collections import Counter, OrderedDict
 from datetime import datetime
-from glob import glob
-from os.path import exists, join
+from os.path import join
 from pprint import pprint
-from typing import List
 
 import matplotlib.pyplot as plt
-from config import DATA_DIR, RAW_DIR
-from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
-from tqdm import tqdm
+from config import DATA_DIR
 
-from cc_tweets.utils import ParallelHandler, load_pkl, mkdir_overwrite, save_pkl
+from cc_tweets.utils import load_pkl, mkdir_overwrite
 
-DATASET_NAME = "tweets_downsized100_filtered"
+DATASET_NAME = "tweets_downsized100_unfiltered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 SAVE_DIR = join(DATA_DIR, f"describe_{DATASET_NAME}")
 
