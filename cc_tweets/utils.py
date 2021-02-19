@@ -88,13 +88,3 @@ class ParallelHandler:
         if flatten:
             rets = [i for l in rets for i in l]
         return rets
-
-
-def get_ngrams(unigrams: List[str], n: int) -> List[str]:
-    if len(unigrams) < n:
-        return []
-    grams = []
-    for i in range(len(unigrams) - n + 1):
-        gram = [unigrams[i + j] for j in range(n)]
-        grams.append(" ".join(gram))
-    return grams

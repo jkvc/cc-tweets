@@ -1,42 +1,13 @@
-import argparse
-import gc
-import json
 import random
-import re
-import string
-import sys
-from collections import Counter
-from glob import glob
-from os.path import exists, join
-from typing import List
 
-import nltk
 import numpy as np
-import pandas as pd
-import scipy.sparse as sp
-import validators
-from config import DATA_DIR, RAW_DIR
-from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
 from tqdm import tqdm
 
-from cc_tweets.utils import (
-    ParallelHandler,
-    get_ngrams,
-    load_pkl,
-    read_txt_as_str_list,
-    save_pkl,
-    write_str_list_as_txt,
-)
-
-SRC_DATASET_NAME = "tweets_downsized10_filtered"
-PKL_PATH = join(DATA_DIR, f"{SRC_DATASET_NAME}.pkl")
-NUM_TRIALS = 10
+from cc_tweets.data_utils import get_ngrams
 
 
-def build_speaker_bigram_matrix(tweets, vocab2idx, speaker2idx):
-    # speaker, phrase
-    m_t = np.zeros((len(speaker2idx), len(vocab2idx)))
+def build_speaker_wordcount_matrix(tweets, vocab2idx, speaker2idx):
+    m_t = np.zeros((len(speaker2idx), len(vocab2idx)))  # speaker, phrase
     for tweet in tqdm(tweets, "build m_t"):
         grams = get_ngrams(tweet["stems"], 2)
         speaker_idx = speaker2idx[tweet["userid"]]
@@ -138,36 +109,29 @@ def leave_out_estimator(m_t, speaker2idx, speaker2stance):
     return left_right_mean
 
 
-if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+def calc_dem_rep_polarization(tweets, vocab2idx, n_trials_avg):
+
     dem_tweets = [t for t in tweets if t["stance"] == "dem"]
     rep_tweets = [t for t in tweets if t["stance"] == "rep"]
-    print(len(dem_tweets), len(rep_tweets))
 
     pols = []
-    for trial in range(NUM_TRIALS):
+    for trial in range(n_trials_avg):
         print("trial", trial)
 
         # subsample dem tweets for class balance
         sampled_dem_tweets = random.sample(dem_tweets, len(rep_tweets))
         balanced_tweets = sampled_dem_tweets + rep_tweets
 
-        vocab2idx = {
-            gram: i
-            for i, gram in enumerate(
-                read_txt_as_str_list(join(DATA_DIR, "vocab_3000_2gram.txt"))
-            )
-        }
         speaker2idx = {
             userid: i
             for i, userid in enumerate(set(t["userid"] for t in balanced_tweets))
         }
         speaker2stance = get_speaker2stance(balanced_tweets)
 
-        m_t = build_speaker_bigram_matrix(balanced_tweets, vocab2idx, speaker2idx)
+        m_t = build_speaker_wordcount_matrix(balanced_tweets, vocab2idx, speaker2idx)
         pol = leave_out_estimator(m_t, speaker2idx, speaker2stance)
         print(pol)
         pols.append(pol)
 
     avgpol = sum(pols) / len(pols)
-    print(">> avgpol", avgpol)
+    return avgpol
