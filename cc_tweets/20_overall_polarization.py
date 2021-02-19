@@ -1,14 +1,11 @@
-import random
 from os.path import join
 
-import numpy as np
 from config import DATA_DIR
-from tqdm import tqdm
 
 from cc_tweets.polarization import calc_dem_rep_polarization
-from cc_tweets.utils import get_ngrams, load_pkl, read_txt_as_str_list
+from cc_tweets.utils import load_pkl, read_txt_as_str_list
 
-SRC_DATASET_NAME = "tweets_downsized100_filtered"
+SRC_DATASET_NAME = "tweets_downsized10_filtered"
 PKL_PATH = join(DATA_DIR, f"{SRC_DATASET_NAME}.pkl")
 
 VOCAB_FILE = join(DATA_DIR, "vocab_3000_2gram.txt")

@@ -1,5 +1,7 @@
 import gc
+from collections import Counter, OrderedDict
 from os.path import join
+from pprint import pprint
 from random import shuffle
 
 import nltk
@@ -18,7 +20,7 @@ EMB_DIM = 50
 EMB_PATH = join(DATA_DIR, f"glove.{EMB_DIM}.csv")
 
 NUM_CLUSTER = 10
-SAVE_RESULTS_DIR = join(DATA_DIR, f"sif.{SRC_DATASET_NAME}.{NUM_CLUSTER}clusters")
+SAVE_RESULTS_DIR = join(DATA_DIR, f"sif.{SRC_DATASET_NAME}.{NUM_CLUSTER}clusters.3")
 
 MAXLEN = 1000
 PRINT_EVERY = 5000
@@ -183,23 +185,32 @@ if __name__ == "__main__":
     vectors = pd.read_csv(EMB_PATH, sep="\t", index_col=0)
     vocab2idx = {w: i for i, w in enumerate(vectors.index.values)}
 
-    tweets = load_pkl(PKL_PATH)[:5000]
+    tweets = load_pkl(PKL_PATH)
     print(len(tweets))
     all_texts = [" ".join(t["stems"]) for t in tweets]
     embeddings = generate_embeddings(all_texts, all_texts, vectors, vocab2idx, EMB_DIM)
 
     print(embeddings.shape)
 
-    kclusterer = KMeansClusterer(
-        NUM_CLUSTER,
-        distance=nltk.cluster.util.cosine_distance,
-        repeats=1,
-    )
-    assigned_clusters = kclusterer.cluster(
-        embeddings,
-        assign_clusters=True,
-        trace=True,
-    )
+    while True:
+        try:
+            kclusterer = KMeansClusterer(
+                NUM_CLUSTER,
+                distance=nltk.cluster.util.cosine_distance,
+                repeats=1,
+            )
+            assigned_clusters = kclusterer.cluster(
+                embeddings,
+                assign_clusters=True,
+                trace=True,
+            )
+            break
+        except AssertionError:
+            # this raises if a cluster is empty,
+            # if it occurs it's always the first iter of kmeans of bad initialization
+            # just retry when that happens
+            continue
+
     print(len(assigned_clusters))
 
     mkdir_overwrite(SAVE_RESULTS_DIR)
@@ -214,3 +225,7 @@ if __name__ == "__main__":
         texts = texts[:50]
         cluster2texts[ci] = texts
     save_json(cluster2texts, join(SAVE_RESULTS_DIR, "samples.json"))
+
+    counts = OrderedDict(sorted(Counter(assigned_clusters).items()))
+    pprint(counts)
+    save_json(counts, join(SAVE_RESULTS_DIR, "counts.json"))

@@ -6,9 +6,9 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 from config import DATA_DIR
 
-from cc_tweets.utils import load_pkl, mkdir_overwrite
+from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
 
-DATASET_NAME = "tweets_downsized100_unfiltered"
+DATASET_NAME = "tweets_downsized10_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 SAVE_DIR = join(DATA_DIR, f"describe_{DATASET_NAME}")
 
@@ -37,3 +37,13 @@ if __name__ == "__main__":
     plt.bar(agg_year.keys(), agg_year.values())
     plt.savefig(join(SAVE_DIR, "agg_year.png"))
     plt.clf()
+
+    # various metrics
+    metrics = {}
+    metrics["total"] = len(tweets)
+    metrics["stances"] = stances
+    metrics["unique_tweeter"] = len(set(t["userid"] for t in tweets))
+    metrics["mean_raw_len"] = sum(len(t["text"]) for t in tweets) / len(tweets)
+    metrics["mean_num_stem"] = sum(len(t["stems"]) for t in tweets) / len(tweets)
+    metrics["mean_num_hashtags"] = sum(len(t["hashtags"]) for t in tweets) / len(tweets)
+    save_json(metrics, join(SAVE_DIR, "metrics.json"))
