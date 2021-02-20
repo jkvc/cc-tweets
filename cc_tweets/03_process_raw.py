@@ -14,8 +14,8 @@ from tqdm import tqdm
 
 from cc_tweets.utils import ParallelHandler, load_pkl, save_pkl
 
-DOWNSIZE_FACTOR = 100
-FILTER_UNK = False
+DOWNSIZE_FACTOR = 10
+FILTER_UNK = True
 SAVE_PATH = join(
     DATA_DIR,
     f"tweets_downsized{DOWNSIZE_FACTOR}{'_filtered' if FILTER_UNK else '_unfiltered'}.pkl",
@@ -80,6 +80,10 @@ def get_tweets_from_raw(jsonl_path):
         tweet = get_data_from_raw_tweet(tweet)
         stance = userid2stance[tweet["user"]["id_str"]]
         if stance == "unk" and FILTER_UNK:
+            continue
+
+        if tweet["lang"] != "en":
+            # dont keep non english
             continue
 
         text = tweet["full_text"]

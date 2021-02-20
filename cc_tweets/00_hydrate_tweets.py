@@ -14,7 +14,7 @@ from cc_tweets.utils import (
     write_str_list_as_txt,
 )
 
-NUM_ID_PER_FILE = 10000
+NUM_ID_PER_FILE = 200000
 
 
 def chunks(lst, n):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         id_chunks = list(chunks(all_ids, NUM_ID_PER_FILE))
         mkdir_overwrite(join(RAW_DIR, "tweet_ids"))
         for i, chunk in enumerate(id_chunks):
-            write_str_list_as_txt(chunk, join(RAW_DIR, "tweet_ids", f"{i:04}.txt"))
+            write_str_list_as_txt(chunk, join(RAW_DIR, "tweet_ids", f"{i:03}.txt"))
 
     if not exists(join(RAW_DIR, "tweets")):
         os.mkdir(join(RAW_DIR, "tweets"))
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         params.append(
             (
                 p,
-                join(RAW_DIR, "tweets", f"{i:04}.jsonl"),
+                join(RAW_DIR, "tweets", f"{i:03}.jsonl"),
                 AUTHS[i % len(AUTHS)],
             )
         )
