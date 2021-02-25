@@ -8,9 +8,9 @@ from config import DATA_DIR
 
 from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
 
-DATASET_NAME = "tweets_downsized10_filtered"
+DATASET_NAME = "tweets_downsized100_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
-SAVE_DIR = join(DATA_DIR, f"describe_{DATASET_NAME}")
+SAVE_DIR = join(DATA_DIR, f"{DATASET_NAME}")
 
 # Fri Nov 30 19:41:04 +0000 2018
 TIME_FORMAT = "%a %b %d %H:%M:%S %z %Y"
