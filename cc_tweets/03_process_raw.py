@@ -9,6 +9,7 @@ from typing import List
 import validators
 from config import DATA_DIR, RAW_DIR
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import SnowballStemmer
 from tqdm import tqdm
 
@@ -64,6 +65,11 @@ def get_stems(tokens: List[str]) -> List[str]:
     return [stemmer.stem(tok) for tok in tokens]
 
 
+def get_lemmas(tokens: List[str]) -> List[str]:
+    lemmeatizer = WordNetLemmatizer()
+    return [lemmeatizer.lemmatize(tok) for tok in tokens]
+
+
 def get_tweets_from_raw(jsonl_path):
     userid2stance_path = join(DATA_DIR, "userid2stance.pkl")
     userid2stance = load_pkl(userid2stance_path)
@@ -87,7 +93,9 @@ def get_tweets_from_raw(jsonl_path):
             continue
 
         text = tweet["full_text"]
-        stems = get_stems(get_words(remove_urls(text)))
+        toks = get_words(remove_urls(text))
+        stems = get_stems(toks)
+        lemmas = get_lemmas(toks)
 
         tweet_data = {
             "id": tweet["id_str"],
@@ -99,6 +107,7 @@ def get_tweets_from_raw(jsonl_path):
             "hashtags": tweet["entities"]["hashtags"],
             "text": text,
             "stems": stems,
+            "lemmas": lemmas,
             "stance": stance,
         }
         all_tweet_data.append(tweet_data)

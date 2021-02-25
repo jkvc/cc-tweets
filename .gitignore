@@ -1,4 +1,5 @@
 data/
 raw/
+resources/
 .vscode
 __pycache__
