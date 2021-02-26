@@ -29,11 +29,11 @@ if __name__ == "__main__":
     sid = SentimentIntensityAnalyzer()
 
     handler = ParallelHandler(get_id0vaderscores)
-    id0vaderscores = handler.run([(tweet["id"], tweet["text"]) for tweet in tweets])
-    id2vaderscores = {id: scores for id, scores in id0vaderscores}
+    id0vader2scores = handler.run([(tweet["id"], tweet["text"]) for tweet in tweets])
+    id2vader2scores = {id: scores for id, scores in id0vader2scores}
 
     save_json(
-        id2vaderscores,
+        id2vader2scores,
         join(DATA_DIR, DATASET_NAME, "52_vader.json"),
     )
 
@@ -42,8 +42,8 @@ if __name__ == "__main__":
 
     for name in score_names:
         stats[f"mean_{name}"] = sum(
-            scores[name] for scores in id2vaderscores.values()
-        ) / len(id2vaderscores)
+            scores[name] for scores in id2vader2scores.values()
+        ) / len(id2vader2scores)
 
     dem_tweets = [t for t in tweets if t["stance"] == "dem"]
     rep_tweets = [t for t in tweets if t["stance"] == "rep"]
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         partisan_stats = {}
         for name in score_names:
             partisan_stats[f"mean_{name}"] = sum(
-                id2vaderscores[t["id"]][name] for t in tweets
+                id2vader2scores[t["id"]][name] for t in tweets
             ) / len(tweets)
         stats[lean] = partisan_stats
 

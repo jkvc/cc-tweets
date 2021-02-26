@@ -1,6 +1,7 @@
 from os.path import join
 
 from config import DATA_DIR, RESOURCES_DIR
+from nltk.stem.snowball import SnowballStemmer
 
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 
@@ -10,7 +11,6 @@ PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 SUBJECTIVITY_LEXICON_PATH = join(
     RESOURCES_DIR, "subjectivity_clues_hltemnlp05", "subjclueslen1-HLTEMNLP05.tff"
 )
-from nltk.stem.snowball import SnowballStemmer
 
 
 def load_subj_lex():
