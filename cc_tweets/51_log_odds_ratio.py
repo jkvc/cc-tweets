@@ -18,6 +18,7 @@ from cc_tweets.utils import ParallelHandler, load_pkl, save_json
 STOPWORDS = stopwords.words("english")
 MIN_WORD_COUNT = 20
 MIN_WORD_LEN = 2
+MIN_UNIQUE_USER = 100  # only keep words used by at least this many users
 
 
 def scaled_lor(
@@ -66,13 +67,30 @@ def scaled_lor(
 
 
 def get_topn_lors(dem_tweets, rep_tweets, tok_type, ngrams, top_n=50):
-    dem_tok2count = dict(
-        Counter([tok for t in dem_tweets for tok in get_ngrams(t[tok_type], ngrams)])
-    )
-    rep_tok2count = dict(
-        Counter([tok for t in rep_tweets for tok in get_ngrams(t[tok_type], ngrams)])
-    )
-    lor0w = scaled_lor(dem_tok2count, rep_tok2count, {})
+    dem_tok2count = defaultdict(int)
+    rep_tok2count = defaultdict(int)
+    tok2users = defaultdict(set)
+    for t in tqdm(dem_tweets):
+        for tok in get_ngrams(t[tok_type], ngrams):
+            tok2users[tok].add(t["id"])
+            dem_tok2count[tok] += 1
+    for t in tqdm(rep_tweets):
+        for tok in get_ngrams(t[tok_type], ngrams):
+            tok2users[tok].add(t["id"])
+            rep_tok2count[tok] += 1
+
+    filtered_dem_tok2count = {
+        tok: count
+        for tok, count in dem_tok2count.items()
+        if len(tok2users[tok]) >= MIN_UNIQUE_USER
+    }
+    filtered_rep_tok2count = {
+        tok: count
+        for tok, count in rep_tok2count.items()
+        if len(tok2users[tok]) >= MIN_UNIQUE_USER
+    }
+
+    lor0w = scaled_lor(filtered_dem_tok2count, filtered_rep_tok2count, {})
     dem_topwords = [w for lor, w in lor0w][:top_n]
     rep_topwords = [w for lor, w in lor0w[::-1]][:top_n]
     return dem_topwords, rep_topwords
@@ -91,6 +109,7 @@ if __name__ == "__main__":
         ("stems", 1),
         ("stems", 2),
     ]:
+        print(tok_type, ngrams)
         dem_topwords, rep_topwords = get_topn_lors(
             dem_tweets, rep_tweets, tok_type, ngrams
         )
