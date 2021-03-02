@@ -3,10 +3,8 @@ from os.path import join
 from config import DATA_DIR
 from nltk.stem.snowball import SnowballStemmer
 
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import load_pkl, save_json
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 ECONOMY_WORDS = set(
     [
@@ -40,7 +38,7 @@ stemmer = SnowballStemmer("english")
 ECONOMY_WORDS = set(stemmer.stem(w) for w in ECONOMY_WORDS)
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
     id2numeconomy = {}
     for tweet in tweets:
@@ -51,7 +49,7 @@ if __name__ == "__main__":
         id2numeconomy[tweet["id"]] = count
     save_json(
         id2numeconomy,
-        join(DATA_DIR, DATASET_NAME, "43_economy_counts.json"),
+        join(DATASET_SAVE_DIR, "43_economy_counts.json"),
     )
 
     stats = {}
@@ -69,5 +67,5 @@ if __name__ == "__main__":
     ) / 2
     save_json(
         stats,
-        join(DATA_DIR, DATASET_NAME, "43_economy_stats.json"),
+        join(DATASET_SAVE_DIR, "43_economy_stats.json"),
     )

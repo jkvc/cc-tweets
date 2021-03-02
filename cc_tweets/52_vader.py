@@ -6,11 +6,9 @@ from config import DATA_DIR
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from tqdm import tqdm
 
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import ParallelHandler, load_pkl, save_json
 from cc_tweets.viz import grouped_bars
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 ANALYZER = SentimentIntensityAnalyzer()
 
@@ -20,7 +18,7 @@ def get_id0vaderscores(id, text):
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
     sid = SentimentIntensityAnalyzer()
 
@@ -30,7 +28,7 @@ if __name__ == "__main__":
 
     save_json(
         id2vader2scores,
-        join(DATA_DIR, DATASET_NAME, "52_vader.json"),
+        join(DATASET_SAVE_DIR, "52_vader.json"),
     )
 
     stats = {}
@@ -58,7 +56,7 @@ if __name__ == "__main__":
 
     save_json(
         stats,
-        join(DATA_DIR, DATASET_NAME, "52_vader_stats.json"),
+        join(DATASET_SAVE_DIR, "52_vader_stats.json"),
     )
 
     vader_names = ["neg", "neu", "pos", "compound"]
@@ -72,5 +70,5 @@ if __name__ == "__main__":
     ax.set_ylabel("mean scores per tweet")
     plt.title("Vader scores v lean")
     plt.savefig(
-        join(DATA_DIR, DATASET_NAME, "52_vader_stats.png"),
+        join(DATASET_SAVE_DIR, "52_vader_stats.png"),
     )

@@ -8,12 +8,10 @@ from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import grouped_bars
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 MFD_PATH = join(RESOURCES_DIR, "MFD", "MFD2.0.csv")
 
@@ -36,7 +34,7 @@ def load_mfd():
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
     valencefoundation2lemmas = load_mfd()
 
     id2vf2count = {}
@@ -52,7 +50,7 @@ if __name__ == "__main__":
 
     save_json(
         id2vf2count,
-        join(DATA_DIR, DATASET_NAME, "61_mfd.json"),
+        join(DATASET_SAVE_DIR, "61_mfd.json"),
     )
 
     stats = {}
@@ -78,7 +76,7 @@ if __name__ == "__main__":
 
     save_json(
         stats,
-        join(DATA_DIR, DATASET_NAME, "61_mfd_stats.json"),
+        join(DATASET_SAVE_DIR, "61_mfd_stats.json"),
     )
 
     vfs = list(valencefoundation2lemmas.keys())
@@ -90,5 +88,5 @@ if __name__ == "__main__":
     ax.set_ylabel("mean count per tweet")
     plt.title("valence_foundation v lean")
     plt.savefig(
-        join(DATA_DIR, DATASET_NAME, "61_mfd_stats.png"),
+        join(DATASET_SAVE_DIR, "61_mfd_stats.png"),
     )

@@ -3,11 +3,9 @@ from os.path import join
 from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem.snowball import SnowballStemmer
 
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.misc import AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 SUBJECTIVITY_LEXICON_PATH = join(
     RESOURCES_DIR, "subjectivity_clues_hltemnlp05", "subjclueslen1-HLTEMNLP05.tff"
@@ -38,7 +36,7 @@ def load_subj_lex():
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
     strong_subj_stems, weak_subj_stems = load_subj_lex()
 
@@ -59,11 +57,11 @@ if __name__ == "__main__":
 
     save_json(
         id2numstrongsubj,
-        join(DATA_DIR, DATASET_NAME, "45_subjectivity_strong_subj.json"),
+        join(DATASET_SAVE_DIR, "45_subjectivity_strong_subj.json"),
     )
     save_json(
         id2numweaksubj,
-        join(DATA_DIR, DATASET_NAME, "45_subjectivity_weak_subj.json"),
+        join(DATASET_SAVE_DIR, "45_subjectivity_weak_subj.json"),
     )
 
     stats = {}
@@ -87,4 +85,4 @@ if __name__ == "__main__":
             substat["mean_count_dem"] + substat["mean_count_rep"]
         ) / 2
         stats[strong_or_weak] = substat
-    save_json(stats, join(DATA_DIR, DATASET_NAME, "45_subjectivity_stats.json"))
+    save_json(stats, join(DATASET_SAVE_DIR, "45_subjectivity_stats.json"))

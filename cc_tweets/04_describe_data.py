@@ -8,7 +8,7 @@ from config import DATA_DIR
 
 from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
 
-DATASET_NAME = "tweets_downsized100_filtered"
+DATASET_NAME = "tweets_downsized10_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 SAVE_DIR = join(DATA_DIR, f"{DATASET_NAME}")
 

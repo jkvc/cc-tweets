@@ -7,10 +7,8 @@ import matplotlib.pyplot as plt
 from config import DATA_DIR
 from nltk.stem.snowball import SnowballStemmer
 
+from cc_tweets.experiment_config import DATASET_NAME, DATASET_PKL_PATH
 from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 NATURAL_DISASTER_WORDS = set(
     [
@@ -45,7 +43,7 @@ stemmer = SnowballStemmer("english")
 NATURAL_DISASTER_WORDS = set(stemmer.stem(w) for w in NATURAL_DISASTER_WORDS)
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
     id2numdisaster = {}
     for tweet in tweets:

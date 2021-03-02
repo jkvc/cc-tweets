@@ -7,12 +7,10 @@ from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import grouped_bars
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 VAD_PATH = join(RESOURCES_DIR, "NRC-VAD-Lexicon-Aug2018Release", "OneFilePerDimension")
 VAD_TO_ABBRV = {
@@ -36,7 +34,7 @@ def load_vad2lemma2score():
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
     vad2lemma2score = load_vad2lemma2score()
 
     id2vad2sumscore = {}
@@ -51,7 +49,7 @@ if __name__ == "__main__":
                 id2vad2sumscore[tweet["id"]][vad] += score
     save_json(
         id2vad2sumscore,
-        join(DATA_DIR, DATASET_NAME, "54_nrc_vad_scores.json"),
+        join(DATASET_SAVE_DIR, "54_nrc_vad_scores.json"),
     )
 
     stats = {}
@@ -77,7 +75,7 @@ if __name__ == "__main__":
 
     save_json(
         stats,
-        join(DATA_DIR, DATASET_NAME, "54_nrc_vad_stats.json"),
+        join(DATASET_SAVE_DIR, "54_nrc_vad_stats.json"),
     )
 
     vads = list(VAD_TO_ABBRV.keys())
@@ -89,5 +87,5 @@ if __name__ == "__main__":
     ax.set_ylabel("mean sum scores per tweet")
     plt.title("NRC VAD sum scores v lean")
     plt.savefig(
-        join(DATA_DIR, DATASET_NAME, "54_nrc_vad_stats.png"),
+        join(DATASET_SAVE_DIR, "54_nrc_vad_stats.png"),
     )

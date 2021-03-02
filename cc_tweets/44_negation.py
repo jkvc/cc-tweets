@@ -3,14 +3,12 @@ from os.path import join
 
 from config import DATA_DIR
 
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import load_pkl, save_json
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 NEGATION_REGEX = "not|n't|never|nor|no|nobody|nowhere|nothing|noone"
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
     id2numnegation = {}
     for tweet in tweets:
@@ -19,7 +17,7 @@ if __name__ == "__main__":
         )
     save_json(
         id2numnegation,
-        join(DATA_DIR, DATASET_NAME, "44_negation_counts.json"),
+        join(DATASET_SAVE_DIR, "44_negation_counts.json"),
     )
 
     stats = {}
@@ -37,5 +35,5 @@ if __name__ == "__main__":
     ) / 2
     save_json(
         stats,
-        join(DATA_DIR, DATASET_NAME, "44_negation_stats.json"),
+        join(DATASET_SAVE_DIR, "44_negation_stats.json"),
     )

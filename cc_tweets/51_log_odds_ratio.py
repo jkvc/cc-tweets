@@ -12,15 +12,12 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from tqdm import tqdm, trange
 
 from cc_tweets.data_utils import get_ngrams
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import ParallelHandler, load_pkl, save_json
 
 STOPWORDS = stopwords.words("english")
 MIN_WORD_COUNT = 20
 MIN_WORD_LEN = 2
-
-
-DATASET_NAME = "tweets_downsized100_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 
 def scaled_lor(
@@ -82,7 +79,7 @@ def get_topn_lors(dem_tweets, rep_tweets, tok_type, ngrams, top_n=50):
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
     dem_tweets = [t for t in tweets if t["stance"] == "dem"]
     rep_tweets = [t for t in tweets if t["stance"] == "rep"]
@@ -101,4 +98,4 @@ if __name__ == "__main__":
             "dem": dem_topwords,
             "rep": rep_topwords,
         }
-    save_json(results, join(DATA_DIR, DATASET_NAME, "51_log_odds_ratio.json"))
+    save_json(results, join(DATASET_SAVE_DIR, "51_log_odds_ratio.json"))
