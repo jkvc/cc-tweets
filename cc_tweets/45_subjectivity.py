@@ -3,6 +3,7 @@ from os.path import join
 from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem.snowball import SnowballStemmer
 
+from cc_tweets.misc import AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 
 DATASET_NAME = "tweets_downsized100_filtered"
@@ -47,6 +48,8 @@ if __name__ == "__main__":
     for tweet in tweets:
         strong_subj_count = weak_subj_count = 0
         for stem in tweet["stems"]:
+            if stem in AFFECT_IGNORE_STEMS:
+                continue
             if stem in strong_subj_stems:
                 strong_subj_count += 1
             if stem in weak_subj_stems:

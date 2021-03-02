@@ -2,11 +2,14 @@ import re
 from collections import defaultdict
 from os.path import join
 
+import matplotlib.pyplot as plt
 from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
+from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
+from cc_tweets.viz import grouped_bars
 
 DATASET_NAME = "tweets_downsized100_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
@@ -42,6 +45,8 @@ if __name__ == "__main__":
         for vad in VAD_TO_ABBRV:
             id2vad2sumscore[tweet["id"]][vad] = 0
             for lemma in tweet["lemmas"]:
+                if lemma in AFFECT_IGNORE_LEMMAS:
+                    continue
                 score = vad2lemma2score[vad].get(lemma, 0)
                 id2vad2sumscore[tweet["id"]][vad] += score
     save_json(
@@ -73,4 +78,16 @@ if __name__ == "__main__":
     save_json(
         stats,
         join(DATA_DIR, DATASET_NAME, "54_nrc_vad_stats.json"),
+    )
+
+    vads = list(VAD_TO_ABBRV.keys())
+    lean2series = {}
+    for lean in ["dem", "rep"]:
+        lean2series[lean] = [round(stats[lean][f"mean_{vad}"], 3) for vad in vads]
+    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = grouped_bars(fig, ax, vads, lean2series)
+    ax.set_ylabel("mean sum scores per tweet")
+    plt.title("NRC VAD sum scores v lean")
+    plt.savefig(
+        join(DATA_DIR, DATASET_NAME, "54_nrc_vad_stats.png"),
     )

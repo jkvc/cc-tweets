@@ -2,11 +2,14 @@ import re
 from collections import defaultdict
 from os.path import join
 
+import matplotlib.pyplot as plt
 from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
+from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
+from cc_tweets.viz import grouped_bars
 
 DATASET_NAME = "tweets_downsized100_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
@@ -49,6 +52,8 @@ if __name__ == "__main__":
         for emo in EMOLEX_EMOS:
             id2emo2sumscore[tweet["id"]][emo] = 0
             for lemma in tweet["lemmas"]:
+                if lemma in AFFECT_IGNORE_LEMMAS:
+                    continue
                 score = emo2lemma2score[emo].get(lemma, 0)
                 id2emo2sumscore[tweet["id"]][emo] += score
     save_json(
@@ -80,4 +85,17 @@ if __name__ == "__main__":
     save_json(
         stats,
         join(DATA_DIR, DATASET_NAME, "53_nrc_emolex_stats.json"),
+    )
+
+    lean2series = {}
+    for lean in ["dem", "rep"]:
+        lean2series[lean] = [
+            round(stats[lean][f"mean_{emo}"], 3) for emo in EMOLEX_EMOS
+        ]
+    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = grouped_bars(fig, ax, EMOLEX_EMOS, lean2series)
+    ax.set_ylabel("mean sum scores per tweet")
+    plt.title("NRC Emolex sum scores v lean")
+    plt.savefig(
+        join(DATA_DIR, DATASET_NAME, "53_nrc_emolex_scores.png"),
     )

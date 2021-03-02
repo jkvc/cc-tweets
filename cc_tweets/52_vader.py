@@ -1,26 +1,22 @@
 import re
 from os.path import join
 
+import matplotlib.pyplot as plt
 from config import DATA_DIR
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from tqdm import tqdm
 
 from cc_tweets.utils import ParallelHandler, load_pkl, save_json
+from cc_tweets.viz import grouped_bars
 
 DATASET_NAME = "tweets_downsized100_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
-SID = SentimentIntensityAnalyzer()
+ANALYZER = SentimentIntensityAnalyzer()
 
 
 def get_id0vaderscores(id, text):
-    # {
-    #     "neg": 0.075,
-    #     "neu": 0.709,
-    #     "pos": 0.216,
-    #     "compound": 0.7003
-    # }
-    return id, SID.polarity_scores(text)
+    return id, ANALYZER.polarity_scores(text)
 
 
 if __name__ == "__main__":
@@ -63,4 +59,18 @@ if __name__ == "__main__":
     save_json(
         stats,
         join(DATA_DIR, DATASET_NAME, "52_vader_stats.json"),
+    )
+
+    vader_names = ["neg", "neu", "pos", "compound"]
+    lean2series = {}
+    for lean in ["dem", "rep"]:
+        lean2series[lean] = [
+            round(stats[lean][f"mean_{name}"], 3) for name in vader_names
+        ]
+    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = grouped_bars(fig, ax, vader_names, lean2series)
+    ax.set_ylabel("mean scores per tweet")
+    plt.title("Vader scores v lean")
+    plt.savefig(
+        join(DATA_DIR, DATASET_NAME, "52_vader_stats.png"),
     )
