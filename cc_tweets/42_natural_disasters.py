@@ -9,7 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 
 from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
 
-DATASET_NAME = "tweets_downsized10_filtered"
+DATASET_NAME = "tweets_downsized100_filtered"
 PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
 
 NATURAL_DISASTER_WORDS = set(
