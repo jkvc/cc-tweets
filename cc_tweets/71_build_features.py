@@ -18,7 +18,7 @@ from cc_tweets.utils import load_json, load_pkl, save_pkl, write_str_list_as_txt
 
 def get_features_single_layer(json_path, ids):
     id2val = load_json(json_path)
-    feature = np.array([id2val[id] for id in ids])
+    feature = scipy.sparse.csr_matrix([id2val[id] for id in ids])
     return feature
 
 
@@ -27,7 +27,7 @@ def get_features_double_layer(name_prefix, json_path, ids):
     feature_names = list(id2feat2val[ids[0]].keys())
     features = []
     for name in feature_names:
-        features.append(np.array([id2feat2val[id][name] for id in ids]))
+        features.append(scipy.sparse.csr_matrix([id2feat2val[id][name] for id in ids]))
     feature_names = [f"{name_prefix}_{name}" for name in feature_names]
     return feature_names, features
 
@@ -48,7 +48,7 @@ def build_vocab_feature(toktype, ngram, tweets, ids):
 
     idx2vocab = {i: tok for tok, i in vocab2idx.items()}
     featnames = [f"{toktype}_{ngram}gram {idx2vocab[i]}" for i in range(len(idx2vocab))]
-    return featnames, feats
+    return featnames, scipy.sparse.csr_matrix(feats)
 
 
 if __name__ == "__main__":
@@ -118,12 +118,12 @@ if __name__ == "__main__":
     feature_names.extend(ns)
     features.extend(fs)
 
-    feature_matrix = np.vstack(features).T
-    print(feature_matrix)
+    feature_matrix = scipy.sparse.vstack(features).T
+    # print(feature_matrix)
     print(feature_matrix.shape)
     # pprint(feature_names)
 
     write_str_list_as_txt(feature_names, join(DATASET_SAVE_DIR, f"feature_names.txt"))
 
-    sparse_matrix = scipy.sparse.csc_matrix(feature_matrix)
-    scipy.sparse.save_npz(join(DATASET_SAVE_DIR, "features.npz"), sparse_matrix)
+    # sparse_matrix = scipy.sparse.csc_matrix(feature_matrix)
+    scipy.sparse.save_npz(join(DATASET_SAVE_DIR, "features.npz"), feature_matrix)
