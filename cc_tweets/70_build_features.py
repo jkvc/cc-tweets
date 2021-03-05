@@ -32,9 +32,9 @@ def get_features_double_layer(name_prefix, json_path, ids):
     return feature_names, features
 
 
-def build_vocab_feature(toktype, ngram, tweets, ids):
+def build_vocab_feature(toktype, ngram, topn, tweets, ids):
     vocab2idx = load_vocab2idx(
-        join(DATASET_SAVE_DIR, f"vocab_{toktype}_{ngram}gram.txt")
+        join(DATASET_SAVE_DIR, f"vocab_{toktype}_{ngram}gram_{topn}.txt")
     )
     id2idx = {id: idx for idx, id in enumerate(ids)}
 
@@ -47,7 +47,9 @@ def build_vocab_feature(toktype, ngram, tweets, ids):
                 feats[vocab2idx[tok]][ididx] += 1
 
     idx2vocab = {i: tok for tok, i in vocab2idx.items()}
-    featnames = [f"{toktype}_{ngram}gram {idx2vocab[i]}" for i in range(len(idx2vocab))]
+    featnames = [
+        f"_{toktype}_{ngram}gram {idx2vocab[i]}" for i in range(len(idx2vocab))
+    ]
     return featnames, scipy.sparse.csr_matrix(feats)
 
 
@@ -59,8 +61,8 @@ if __name__ == "__main__":
     feature_names = []
     features = []
 
-    feature_names.append("bias")
-    features.append(np.ones((len(ids),)))
+    # feature_names.append("bias")
+    # features.append(np.ones((len(ids),)))
 
     feature_names.append("num_natural_disaster")
     features.append(
@@ -110,11 +112,11 @@ if __name__ == "__main__":
     feature_names.extend(ns)
     features.extend(fs)
 
-    ns, fs = build_vocab_feature("lemmas", 1, tweets, ids)
+    ns, fs = build_vocab_feature("stems", 1, 300, tweets, ids)
     feature_names.extend(ns)
     features.extend(fs)
 
-    ns, fs = build_vocab_feature("stems", 2, tweets, ids)
+    ns, fs = build_vocab_feature("stems", 2, 300, tweets, ids)
     feature_names.extend(ns)
     features.extend(fs)
 
@@ -124,6 +126,7 @@ if __name__ == "__main__":
     # pprint(feature_names)
 
     write_str_list_as_txt(feature_names, join(DATASET_SAVE_DIR, f"feature_names.txt"))
+    write_str_list_as_txt(ids, join(DATASET_SAVE_DIR, f"feature_ids.txt"))
 
     # sparse_matrix = scipy.sparse.csc_matrix(feature_matrix)
     scipy.sparse.save_npz(join(DATASET_SAVE_DIR, "features.npz"), feature_matrix)
