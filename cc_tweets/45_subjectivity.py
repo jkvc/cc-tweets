@@ -4,6 +4,7 @@ from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem.snowball import SnowballStemmer
 
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 
@@ -42,47 +43,29 @@ if __name__ == "__main__":
 
     id2numstrongsubj = {}
     id2numweaksubj = {}
+    id2combinedsubj = {}
 
     for tweet in tweets:
-        strong_subj_count = weak_subj_count = 0
+        strong_subj_count = weak_subj_count = combined_subj_count = 0
         for stem in tweet["stems"]:
             if stem in AFFECT_IGNORE_STEMS:
                 continue
             if stem in strong_subj_stems:
                 strong_subj_count += 1
+                combined_subj_count += 1
             if stem in weak_subj_stems:
                 weak_subj_count += 1
+                combined_subj_count -= 1
         id2numstrongsubj[tweet["id"]] = strong_subj_count
         id2numweaksubj[tweet["id"]] = weak_subj_count
+        id2combinedsubj[tweet["id"]] = combined_subj_count
 
-    save_json(
-        id2numstrongsubj,
-        join(DATASET_SAVE_DIR, "45_subjectivity_strong_subj.json"),
+    save_features(
+        tweets,
+        {
+            "subj_strong": id2numstrongsubj,
+            "subj_weak": id2numweaksubj,
+            "subj_combined": id2combinedsubj,
+        },
+        "45_subjectivity",
     )
-    save_json(
-        id2numweaksubj,
-        join(DATASET_SAVE_DIR, "45_subjectivity_weak_subj.json"),
-    )
-
-    stats = {}
-
-    dem_tweets = [t for t in tweets if t["stance"] == "dem"]
-    rep_tweets = [t for t in tweets if t["stance"] == "rep"]
-
-    for strong_or_weak, id2count in [
-        ("strong_subj", id2numstrongsubj),
-        ("weak_subj", id2numweaksubj),
-    ]:
-        substat = {}
-        substat["mean_count"] = sum(id2count.values()) / len(id2count)
-        substat["mean_count_dem"] = sum(id2count[t["id"]] for t in dem_tweets) / len(
-            dem_tweets
-        )
-        substat["mean_count_rep"] = sum(id2count[t["id"]] for t in rep_tweets) / len(
-            rep_tweets
-        )
-        substat["mean_count_adjusted_for_dem_rep_imbalance"] = (
-            substat["mean_count_dem"] + substat["mean_count_rep"]
-        ) / 2
-        stats[strong_or_weak] = substat
-    save_json(stats, join(DATASET_SAVE_DIR, "45_subjectivity_stats.json"))

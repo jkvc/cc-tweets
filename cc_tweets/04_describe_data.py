@@ -6,25 +6,22 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 from config import DATA_DIR
 
+from cc_tweets.experiment_config import DATASET_NAME, DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
-
-DATASET_NAME = "tweets_downsized10_filtered"
-PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
-SAVE_DIR = join(DATA_DIR, f"{DATASET_NAME}")
 
 # Fri Nov 30 19:41:04 +0000 2018
 TIME_FORMAT = "%a %b %d %H:%M:%S %z %Y"
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(PKL_PATH)
+    tweets = load_pkl(DATASET_PKL_PATH)
 
-    mkdir_overwrite(SAVE_DIR)
+    mkdir_overwrite(DATASET_SAVE_DIR)
 
     # count stances
     stances = dict(Counter(t["stance"] for t in tweets))
     plt.bar(stances.keys(), stances.values())
-    plt.savefig(join(SAVE_DIR, "stances_count.png"))
+    plt.savefig(join(DATASET_SAVE_DIR, "stances_count.png"))
     plt.clf()
 
     # count time
@@ -35,7 +32,7 @@ if __name__ == "__main__":
     agg_year = OrderedDict(sorted(agg_year.items()))
     pprint(agg_year)
     plt.bar(agg_year.keys(), agg_year.values())
-    plt.savefig(join(SAVE_DIR, "agg_year.png"))
+    plt.savefig(join(DATASET_SAVE_DIR, "agg_year.png"))
     plt.clf()
 
     # various metrics
@@ -46,4 +43,7 @@ if __name__ == "__main__":
     metrics["mean_raw_len"] = sum(len(t["text"]) for t in tweets) / len(tweets)
     metrics["mean_num_stem"] = sum(len(t["stems"]) for t in tweets) / len(tweets)
     metrics["mean_num_hashtags"] = sum(len(t["hashtags"]) for t in tweets) / len(tweets)
-    save_json(metrics, join(SAVE_DIR, "metrics.json"))
+    save_json(metrics, join(DATASET_SAVE_DIR, "metrics.json"))
+
+    mkdir_overwrite(join(DATASET_SAVE_DIR, "features"))
+    mkdir_overwrite(join(DATASET_SAVE_DIR, "feature_stats"))

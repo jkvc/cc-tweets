@@ -1,14 +1,12 @@
 from os.path import join
 from pprint import pprint
 
+import matplotlib.pyplot as plt
 import numpy as np
-import scipy.sparse
 from config import DATA_DIR
-from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge
-from tqdm import tqdm
 
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
-from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json
+from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
 
 if __name__ == "__main__":
     tweets = load_pkl(DATASET_PKL_PATH)
@@ -22,6 +20,7 @@ if __name__ == "__main__":
             return mean_num_followers
 
     stats = {
+        "num_tweets": len(tweets),
         "median_likes_to_followers": (
             np.median(
                 np.array(
@@ -40,4 +39,87 @@ if __name__ == "__main__":
             )
         ),
     }
+
+    fig, axes = plt.subplots(ncols=2, nrows=2, figsize=(16, 16))
+
+    # n_retweet v follower
+    follower0rts = [(_get_num_followers(t["userid"]), t["retweets"]) for t in tweets]
+    followers, rts = unzip(follower0rts)
+    followers, rts = np.array(followers), np.array(rts)
+    axes[0][0].scatter(followers, rts, marker=".")
+    axes[0][0].set_title("retweets v followers")
+    axes[0][0].set_xlabel("followers")
+    axes[0][0].set_ylabel("rts")
+    c1, c0 = np.polyfit(followers, rts, 1)
+    linreg_fn = np.poly1d([c1, c0])
+    linespace = np.linspace(followers.min(), followers.max(), 20)
+    axes[0][0].plot(linespace, linreg_fn(linespace), color="red")
+    preds = linreg_fn(followers)
+    stats["rt"] = {
+        "c0": c0,
+        "c1": c1,
+        "higher": int((rts >= preds).sum()),
+        "lower": int((rts < preds).sum()),
+    }
+
+    # log n_retweet v follower
+    log_followers = np.log(np.array(followers) + 1)
+    log_rts = np.log(np.array(rts) + 1)
+    axes[0][1].scatter(log_followers, log_rts, marker=".")
+    axes[0][1].set_title("log retweets v log followers")
+    axes[0][1].set_xlabel("log followers")
+    axes[0][1].set_ylabel("log rts")
+    c1, c0 = np.polyfit(log_followers, log_rts, 1)
+    linreg_fn = np.poly1d([c1, c0])
+    linespace = np.linspace(log_followers.min(), log_followers.max(), 20)
+    axes[0][1].plot(linespace, linreg_fn(linespace), color="red")
+    preds = linreg_fn(log_followers)
+    stats["log_rt"] = {
+        "c0": c0,
+        "c1": c1,
+        "higher": int((log_rts >= preds).sum()),
+        "lower": int((log_rts < preds).sum()),
+    }
+
+    # n_like v follower
+    follower0likes = [(_get_num_followers(t["userid"]), t["likes"]) for t in tweets]
+    followers, likes = unzip(follower0likes)
+    followers, likes = np.array(followers), np.array(likes)
+    axes[1][0].scatter(followers, likes, marker=".")
+    axes[1][0].set_title("likes v followers")
+    axes[1][0].set_xlabel("followers")
+    axes[1][0].set_ylabel("likes")
+    c1, c0 = np.polyfit(followers, likes, 1)
+    linreg_fn = np.poly1d([c1, c0])
+    linespace = np.linspace(followers.min(), followers.max(), 20)
+    axes[1][0].plot(linespace, linreg_fn(linespace), color="red")
+    preds = linreg_fn(followers)
+    stats["likes"] = {
+        "c0": c0,
+        "c1": c1,
+        "higher": int((likes >= preds).sum()),
+        "lower": int((likes < preds).sum()),
+    }
+
+    # log n_like v follower
+    log_followers = np.log(np.array(followers) + 1)
+    log_likes = np.log(np.array(likes) + 1)
+    axes[1][1].scatter(log_followers, log_likes, marker=".")
+    axes[1][1].set_title("log likes v log followers")
+    axes[1][1].set_xlabel("log followers")
+    axes[1][1].set_ylabel("log likes")
+    c1, c0 = np.polyfit(log_followers, log_likes, 1)
+    linreg_fn = np.poly1d([c1, c0])
+    linespace = np.linspace(log_followers.min(), log_followers.max(), 20)
+    axes[1][1].plot(linespace, linreg_fn(linespace), color="red")
+    preds = linreg_fn(log_followers)
+    stats["log_likes"] = {
+        "c0": c0,
+        "c1": c1,
+        "higher": int((log_likes >= preds).sum()),
+        "lower": int((log_likes < preds).sum()),
+    }
+
+    plt.savefig(join(DATASET_SAVE_DIR, "71_engagement_stats.png"))
+
     save_json(stats, join(DATASET_SAVE_DIR, "71_engagement_stats.json"))

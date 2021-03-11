@@ -83,6 +83,22 @@ if __name__ == "__main__":
 
     plt.clf()
     fig, ax = plt.subplots(figsize=(7, 7))
+    y_pos = np.arange(len(non_vocab_feature2coef))
+    ax.barh(
+        y_pos,
+        non_vocab_feature2coef.values(),
+        align="center",
+    )
+    ax.yaxis.tick_right()
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(non_vocab_feature2coef.keys())
+    ax.set_title("non vocab feature coefs")
+    plt.subplots_adjust(left=0.1, right=0.6)
+    plt.savefig(join(DATASET_SAVE_DIR, "72_logreg_non_vocab_feature2coef.png"))
+    plt.clf()
+
+    plt.clf()
+    fig, ax = plt.subplots(figsize=(7, 7))
     y_pos = np.arange(len(non_vocab_feature2coef_sorted))
     ax.barh(
         y_pos,

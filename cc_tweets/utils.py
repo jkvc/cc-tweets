@@ -88,3 +88,7 @@ class ParallelHandler:
         if flatten:
             rets = [i for l in rets for i in l]
         return rets
+
+
+def unzip(l):
+    return list(zip(*l))

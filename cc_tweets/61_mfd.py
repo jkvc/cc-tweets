@@ -9,6 +9,7 @@ from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import grouped_bars
@@ -37,56 +38,27 @@ if __name__ == "__main__":
     tweets = load_pkl(DATASET_PKL_PATH)
     valencefoundation2lemmas = load_mfd()
 
-    id2vf2count = {}
+    name2id2count = defaultdict(lambda: defaultdict(float))
     for tweet in tqdm(tweets):
-        id2vf2count[tweet["id"]] = {vf: 0 for vf in valencefoundation2lemmas.keys()}
-        for lemma in tweet["lemmas"]:
-            if lemma in AFFECT_IGNORE_LEMMAS:
-                continue
-            for vf, vf_lemmas in valencefoundation2lemmas.items():
+        for vf, vf_lemmas in valencefoundation2lemmas.items():
+            name2id2count[vf][tweet["id"]] = 0
+            for lemma in tweet["lemmas"]:
+                if lemma in AFFECT_IGNORE_LEMMAS:
+                    continue
                 if lemma in vf_lemmas:
-                    id2vf2count[tweet["id"]][vf] += 1
-    id2vf2count = dict(id2vf2count)
+                    name2id2count[vf][tweet["id"]] += 1
 
-    save_json(
-        id2vf2count,
-        join(DATASET_SAVE_DIR, "61_mfd.json"),
-    )
+    name2id2count = {f"mfd_{k}": v for k, v in name2id2count.items()}
+    save_features(tweets, name2id2count, "61_mfd")
 
-    stats = {}
-    for vf in valencefoundation2lemmas.keys():
-        stats[f"mean_{vf}"] = sum(count[vf] for count in id2vf2count.values()) / len(
-            id2vf2count
-        )
-
-    dem_tweets = [t for t in tweets if t["stance"] == "dem"]
-    rep_tweets = [t for t in tweets if t["stance"] == "rep"]
-    for lean, tweets in [("dem", dem_tweets), ("rep", rep_tweets)]:
-        partisan_stats = {}
-        for vf in valencefoundation2lemmas.keys():
-            partisan_stats[f"mean_{vf}"] = sum(
-                id2vf2count[t["id"]][vf] for t in tweets
-            ) / len(tweets)
-        stats[lean] = partisan_stats
-
-    for vf in valencefoundation2lemmas.keys():
-        stats[f"mean_{vf}_adjusted_for_dem_rep_imbalance"] = (
-            stats["dem"][f"mean_{vf}"] + stats["rep"][f"mean_{vf}"]
-        ) / 2
-
-    save_json(
-        stats,
-        join(DATASET_SAVE_DIR, "61_mfd_stats.json"),
-    )
-
-    vfs = list(valencefoundation2lemmas.keys())
-    lean2vfs = {}
-    for lean in ["dem", "rep"]:
-        lean2vfs[lean] = [round(stats[lean][f"mean_{vf}"], 3) for vf in vfs]
-    fig, ax = plt.subplots(figsize=(15, 5))
-    fig, ax = grouped_bars(fig, ax, vfs, lean2vfs)
-    ax.set_ylabel("mean count per tweet")
-    plt.title("valence_foundation v lean")
-    plt.savefig(
-        join(DATASET_SAVE_DIR, "61_mfd_stats.png"),
-    )
+    # vfs = list(valencefoundation2lemmas.keys())
+    # lean2vfs = {}
+    # for lean in ["dem", "rep"]:
+    #     lean2vfs[lean] = [round(stats[lean][f"mean_{vf}"], 3) for vf in vfs]
+    # fig, ax = plt.subplots(figsize=(15, 5))
+    # fig, ax = grouped_bars(fig, ax, vfs, lean2vfs)
+    # ax.set_ylabel("mean count per tweet")
+    # plt.title("valence_foundation v lean")
+    # plt.savefig(
+    #     join(DATASET_SAVE_DIR, "61_mfd_stats.png"),
+    # )
