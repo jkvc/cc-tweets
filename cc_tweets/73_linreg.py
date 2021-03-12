@@ -5,6 +5,7 @@ import numpy as np
 import scipy.sparse
 from config import DATA_DIR
 from sklearn.linear_model import LinearRegression, Ridge
+from tqdm import tqdm
 
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list
