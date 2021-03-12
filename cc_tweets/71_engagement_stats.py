@@ -17,7 +17,7 @@ if __name__ == "__main__":
         if userid in userid2numfollowers:
             return userid2numfollowers[userid]
         else:
-            return mean_num_followers
+            return 0
 
     stats = {
         "num_tweets": len(tweets),
@@ -121,5 +121,12 @@ if __name__ == "__main__":
     }
 
     plt.savefig(join(DATASET_SAVE_DIR, "71_engagement_stats.png"))
-
     save_json(stats, join(DATASET_SAVE_DIR, "71_engagement_stats.json"))
+
+    plt.clf()
+    fig, axes = plt.subplots(ncols=2, figsize=(10, 7))
+    axes[0].hist(followers)
+    axes[0].set_title("followers")
+    axes[1].hist(log_followers)
+    axes[1].set_title("log (follower + 1)")
+    plt.savefig(join(DATASET_SAVE_DIR, "71_followers.png"))
