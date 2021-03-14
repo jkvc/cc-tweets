@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from cc_tweets.data_utils import get_ngrams, load_vocab2idx
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
-from cc_tweets.utils import load_json, load_pkl, write_str_list_as_txt
+from cc_tweets.utils import load_json, load_pkl, save_pkl, write_str_list_as_txt
 
 
 def load_features(tweets, feature_names):
@@ -89,3 +89,8 @@ if __name__ == "__main__":
 
     log_retweets = get_log_retweets(tweets)
     scipy.sparse.save_npz(join(savedir, "log_retweets.npz"), log_retweets)
+
+    idxs_dem = [i for i, t in enumerate(tweets) if t["stance"] == "dem"]
+    idxs_rep = [i for i, t in enumerate(tweets) if t["stance"] == "rep"]
+    save_pkl(idxs_dem, join(savedir, "idxs_dem.pkl"))
+    save_pkl(idxs_rep, join(savedir, "idxs_rep.pkl"))
