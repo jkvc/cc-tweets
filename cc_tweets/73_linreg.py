@@ -1,63 +1,37 @@
+from os import makedirs
 from os.path import join
 from pprint import pprint
 
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse
-from config import DATA_DIR
-from sklearn.linear_model import LinearRegression, Ridge
-from tqdm import tqdm
+import statsmodels.api as sm
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
-from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list
+from cc_tweets.experiment_config import DATASET_SAVE_DIR
+from cc_tweets.utils import read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_feature_weights
 
 if __name__ == "__main__":
-    feature_matrix = scipy.sparse.load_npz(join(DATASET_SAVE_DIR, "features.npz"))
-    feature_names = read_txt_as_str_list(join(DATASET_SAVE_DIR, f"feature_names.txt"))
-    feature_ids = read_txt_as_str_list(join(DATASET_SAVE_DIR, f"feature_ids.txt"))
-    id2idx = {id: i for i, id in enumerate(feature_ids)}
-    userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
-    mean_num_followers = sum(userid2numfollowers.values()) / len(userid2numfollowers)
+    savedir = join(DATASET_SAVE_DIR, "linreg")
+    makedirs(savedir, exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    regin_dir = join(DATASET_SAVE_DIR, "regression_inputs")
+    feature_matrix = scipy.sparse.load_npz(join(regin_dir, "feature_matrix.npz"))
+    feature_names = read_txt_as_str_list(join(regin_dir, f"feature_names.txt"))
+    log_retweets = scipy.sparse.load_npz(join(regin_dir, f"log_retweets.npz"))
+    log_retweets, feature_matrix = log_retweets.toarray(), feature_matrix.toarray()
+    log_retweets = np.squeeze(log_retweets)
 
-    followers = np.zeros((len(id2idx),))
-    retweets = np.zeros((len(id2idx),))
-    for t in tweets:
-        id = t["id"]
-        userid = t["userid"]
-        idx = id2idx[id]
-        followers[idx] = userid2numfollowers.get(userid, 0)
-        retweets[idx] = t["retweets"]
-    log_followers = np.log(followers + 1)
-    log_retweets = np.log(retweets + 1)
+    model = sm.OLS(log_retweets, feature_matrix)
+    fit = model.fit()
 
-    feature_names.append("log_followers")
-    print(feature_matrix.shape)
-    feature_matrix = scipy.sparse.hstack(
-        [feature_matrix, np.expand_dims(log_followers, -1)]
+    name2coef = {name: coef for name, coef in zip(feature_names, fit.params)}
+    name2std = {name: std for name, std in zip(feature_names, fit.bse)}
+    plot_feature_weights(
+        name2coef,
+        save_path=join(savedir, "coef.png"),
+        title="coefs: lin reg on log retweets",
+        xlim=(-0.3, 0.3),
+        yerr=fit.bse,
     )
-
-    for regname, regfactory in [
-        (
-            "linreg",
-            lambda: LinearRegression(fit_intercept=False),
-        ),
-        (
-            "ridge",
-            lambda: Ridge(fit_intercept=False),
-        ),
-    ]:
-        reg = regfactory()
-        reg.fit(feature_matrix, log_retweets)
-
-        feature2coef = {}
-        for i, feature_name in enumerate(feature_names):
-            feature2coef[feature_name] = reg.coef_[i]
-
-        plot_feature_weights(
-            feature2coef,
-            join(DATASET_SAVE_DIR, f"73_{regname}.png"),
-            title=f"{regname} on log retweets",
-            xlim=(-0.3, 0.3),
-        )
+    save_json({"coef": name2coef, "std": name2std}, join(savedir, "coef.json"))

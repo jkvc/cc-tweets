@@ -28,7 +28,7 @@ def grouped_bars(fig, ax, x_labels, name2series, width=0.35):
     return fig, ax
 
 
-def plot_feature_weights(name2weight, save_path, title, xlim=None):
+def plot_feature_weights(name2weight, save_path, title, xlim=None, yerr=None):
     plt.clf()
     fig, ax = plt.subplots(figsize=(7, 7))
     y_pos = np.arange(len(name2weight))
@@ -36,6 +36,7 @@ def plot_feature_weights(name2weight, save_path, title, xlim=None):
         y_pos,
         name2weight.values(),
         align="center",
+        xerr=yerr,
     )
     ax.yaxis.tick_right()
     ax.set_yticks(y_pos)
