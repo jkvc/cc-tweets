@@ -77,32 +77,3 @@ if __name__ == "__main__":
 
     handler = ParallelHandler(hydrate_chunk)
     handler.run(params, num_procs=len(AUTHS))
-
-    # hydrate_chunk(
-    #     join(RAW_DIR, "tweet_ids", "000.txt"),
-    #     join(RAW_DIR, "tweets", "000.jsonl"),
-    #     AUTHS[0],
-    # )
-
-    # tweet_ids_json_paths = sorted(glob(join(RAW_DIR, "ids", "*txt")))
-
-    # for p in tweet_ids_json_paths:
-    #     if exists(join(RAW_DIR, "_completed", basename(p))):
-    #         print("skip", basename(p))
-    #         continue
-
-    #     save_filename = basename(p).replace(".txt", ".jsonl")
-    #     print("-- hydrate", save_filename)
-    #     cmd = TWARC_HYDRATE_CMD_BASE.format(
-    #         p,
-    #         LOG_PATH,
-    #         join(RAW_DIR, "tweets", save_filename),
-    #     )
-
-    #     assert os.system(cmd) == 0
-    #     print("-- done   ", save_filename)
-
-    #     write_str_list_as_txt(
-    #         ["yay"],
-    #         join(RAW_DIR, "_completed", basename(p)),
-    #     )

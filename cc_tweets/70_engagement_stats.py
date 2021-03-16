@@ -1,3 +1,4 @@
+from os import makedirs
 from os.path import join
 from pprint import pprint
 
@@ -8,7 +9,11 @@ from config import DATA_DIR
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
 
+SAVE_DIR = join(DATASET_SAVE_DIR, "engagement")
+
 if __name__ == "__main__":
+    makedirs(SAVE_DIR, exist_ok=True)
+
     tweets = load_pkl(DATASET_PKL_PATH)
     userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
     mean_num_followers = sum(userid2numfollowers.values()) / len(userid2numfollowers)
@@ -120,8 +125,8 @@ if __name__ == "__main__":
         "lower": int((log_likes < preds).sum()),
     }
 
-    plt.savefig(join(DATASET_SAVE_DIR, "71_engagement_stats.png"))
-    save_json(stats, join(DATASET_SAVE_DIR, "71_engagement_stats.json"))
+    plt.savefig(join(SAVE_DIR, "stats.png"))
+    save_json(stats, join(SAVE_DIR, "stats.json"))
 
     plt.clf()
     fig, axes = plt.subplots(ncols=2, figsize=(10, 7))
@@ -129,4 +134,4 @@ if __name__ == "__main__":
     axes[0].set_title("followers")
     axes[1].hist(log_followers)
     axes[1].set_title("log (follower + 1)")
-    plt.savefig(join(DATASET_SAVE_DIR, "71_followers.png"))
+    plt.savefig(join(SAVE_DIR, "followers_hist.png"))

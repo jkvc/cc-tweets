@@ -1,12 +1,12 @@
 from os.path import join
 
-from config import DATA_DIR, RESOURCES_DIR
+from config import RESOURCES_DIR
 from nltk.stem.snowball import SnowballStemmer
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import DATASET_PKL_PATH
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_STEMS
-from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
+from cc_tweets.utils import load_pkl, read_txt_as_str_list
 
 SUBJECTIVITY_LEXICON_PATH = join(
     RESOURCES_DIR, "subjectivity_clues_hltemnlp05", "subjclueslen1-HLTEMNLP05.tff"
@@ -67,5 +67,5 @@ if __name__ == "__main__":
             "subj_weak": id2numweaksubj,
             "subj_combined": id2combinedsubj,
         },
-        "45_subjectivity",
+        "subjectivity",
     )

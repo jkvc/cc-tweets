@@ -54,4 +54,4 @@ if __name__ == "__main__":
 
     name2id2score = {f"emolex_{k}": v for k, v in name2id2score.items()}
 
-    save_features(tweets, name2id2score, "53_nrc_emolex")
+    save_features(tweets, name2id2score, "nrc_emolex")

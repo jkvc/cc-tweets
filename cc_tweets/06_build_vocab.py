@@ -2,6 +2,7 @@ import json
 import re
 import string
 from collections import Counter
+from os import makedirs
 from os.path import join
 
 from config import DATA_DIR
@@ -18,6 +19,7 @@ NGRAMS = [1, 2]
 
 if __name__ == "__main__":
     tweets = load_pkl(DATASET_PKL_PATH)
+    makedirs(join(DATASET_SAVE_DIR, "vocab"), exist_ok=True)
 
     for tok_type in TOK_TYPES:
         for ngram in NGRAMS:
@@ -31,6 +33,6 @@ if __name__ == "__main__":
                 count0token = sorted([(c, w) for w, c in counts.items()], reverse=True)
                 vocab = [w for c, w in count0token[:top_n]]
                 save_path = join(
-                    DATASET_SAVE_DIR, f"vocab_{tok_type}_{ngram}gram_{top_n}.txt"
+                    DATASET_SAVE_DIR, "vocab", f"{tok_type}_{ngram}gram_{top_n}.txt"
                 )
                 write_str_list_as_txt(vocab, save_path)

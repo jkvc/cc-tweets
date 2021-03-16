@@ -1,11 +1,8 @@
-from os.path import join
-
-from config import DATA_DIR
 from nltk.stem.snowball import SnowballStemmer
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import DATASET_PKL_PATH
 from cc_tweets.feature_utils import save_features
-from cc_tweets.utils import load_pkl, save_json
+from cc_tweets.utils import load_pkl
 
 ECONOMY_WORDS = set(
     [
@@ -49,4 +46,4 @@ if __name__ == "__main__":
                 count += 1
         id2numeconomy[tweet["id"]] = count
 
-    save_features(tweets, {"economy": id2numeconomy}, "43_economy")
+    save_features(tweets, {"economy": id2numeconomy}, "economy")

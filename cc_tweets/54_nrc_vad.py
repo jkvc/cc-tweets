@@ -50,16 +50,4 @@ if __name__ == "__main__":
 
     name2id2score = {f"vad_{k}": v for k, v in name2id2score.items()}
 
-    save_features(tweets, name2id2score, "54_nrc_vad")
-
-    # vads = list(VAD_TO_ABBRV.keys())
-    # lean2series = {}
-    # for lean in ["dem", "rep"]:
-    #     lean2series[lean] = [round(stats[lean][f"mean_{vad}"], 3) for vad in vads]
-    # fig, ax = plt.subplots(figsize=(8, 5))
-    # fig, ax = grouped_bars(fig, ax, vads, lean2series)
-    # ax.set_ylabel("mean sum scores per tweet")
-    # plt.title("NRC VAD sum scores v lean")
-    # plt.savefig(
-    #     join(DATASET_SAVE_DIR, "54_nrc_vad_stats.png"),
-    # )
+    save_features(tweets, name2id2score, "nrc_vad")

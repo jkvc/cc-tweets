@@ -4,9 +4,8 @@ from os.path import join
 from pprint import pprint
 
 import matplotlib.pyplot as plt
-from config import DATA_DIR
 
-from cc_tweets.experiment_config import DATASET_NAME, DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.utils import load_pkl, mkdir_overwrite, save_json
 
 # Fri Nov 30 19:41:04 +0000 2018
@@ -44,6 +43,3 @@ if __name__ == "__main__":
     metrics["mean_num_stem"] = sum(len(t["stems"]) for t in tweets) / len(tweets)
     metrics["mean_num_hashtags"] = sum(len(t["hashtags"]) for t in tweets) / len(tweets)
     save_json(metrics, join(DATASET_SAVE_DIR, "metrics.json"))
-
-    mkdir_overwrite(join(DATASET_SAVE_DIR, "features"))
-    mkdir_overwrite(join(DATASET_SAVE_DIR, "feature_stats"))

@@ -49,16 +49,4 @@ if __name__ == "__main__":
                     name2id2count[vf][tweet["id"]] += 1
 
     name2id2count = {f"mfd_{k}": v for k, v in name2id2count.items()}
-    save_features(tweets, name2id2count, "61_mfd")
-
-    # vfs = list(valencefoundation2lemmas.keys())
-    # lean2vfs = {}
-    # for lean in ["dem", "rep"]:
-    #     lean2vfs[lean] = [round(stats[lean][f"mean_{vf}"], 3) for vf in vfs]
-    # fig, ax = plt.subplots(figsize=(15, 5))
-    # fig, ax = grouped_bars(fig, ax, vfs, lean2vfs)
-    # ax.set_ylabel("mean count per tweet")
-    # plt.title("valence_foundation v lean")
-    # plt.savefig(
-    #     join(DATASET_SAVE_DIR, "61_mfd_stats.png"),
-    # )
+    save_features(tweets, name2id2count, "mfd")

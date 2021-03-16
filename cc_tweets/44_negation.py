@@ -1,11 +1,8 @@
 import re
-from os.path import join
 
-from config import DATA_DIR
-
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import DATASET_PKL_PATH
 from cc_tweets.feature_utils import save_features
-from cc_tweets.utils import load_pkl, save_json
+from cc_tweets.utils import load_pkl
 
 NEGATION_REGEX = "not|n't|never|nor|no|nobody|nowhere|nothing|noone"
 if __name__ == "__main__":
@@ -17,4 +14,4 @@ if __name__ == "__main__":
             list(re.finditer(NEGATION_REGEX, tweet["text"], re.IGNORECASE))
         )
 
-    save_features(tweets, {"negation": id2numnegation}, "44_negation")
+    save_features(tweets, {"negation": id2numnegation}, "negation")

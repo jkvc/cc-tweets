@@ -45,13 +45,15 @@ def save_features(
     name2id2value,
     source_name,
     save_features_dir=join(DATA_DIR, DATASET_NAME, "features"),
+    save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
 ):
     makedirs(save_features_dir, exist_ok=True)
+    makedirs(save_feature_stats_dir, exist_ok=True)
     for name, id2value in name2id2value.items():
         save_pkl(id2value, join(save_features_dir, f"{name}.pkl"))
 
     stats = get_stats(tweets, name2id2value)
     save_json(
         stats,
-        join(DATA_DIR, DATASET_NAME, "feature_stats", f"{source_name}.json"),
+        join(save_feature_stats_dir, f"{source_name}.json"),
     )
