@@ -7,12 +7,7 @@ from nltk.collocations import BigramCollocationFinder
 from tqdm import tqdm
 
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import (
-    DATASET_NAME,
-    DATASET_PKL_PATH,
-    DATASET_SAVE_DIR,
-    DOWNSIZE_FACTOR,
-)
+from cc_tweets.experiment_config import DATASET_NAME, DATASET_PKL_PATH, DOWNSIZE_FACTOR
 from cc_tweets.feature_utils import save_features
 from cc_tweets.utils import load_pkl, mkdir_overwrite, write_str_list_as_txt
 
@@ -53,7 +48,7 @@ if __name__ == "__main__":
     mkdir_overwrite(SAVE_DIR)
     write_str_list_as_txt(
         significant_bigrams,
-        join(SAVE_DIR, "_bigrams.txt"),
+        join(SAVE_DIR, "_names.txt"),
     )
 
     # build features

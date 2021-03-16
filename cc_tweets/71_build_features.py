@@ -7,20 +7,44 @@ import scipy.sparse
 from config import DATA_DIR
 from tqdm import tqdm
 
-from cc_tweets.data_utils import get_ngrams, load_vocab2idx
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
-from cc_tweets.utils import load_json, load_pkl, save_pkl, write_str_list_as_txt
+from cc_tweets.utils import (
+    load_json,
+    load_pkl,
+    read_txt_as_str_list,
+    save_pkl,
+    write_str_list_as_txt,
+)
+
+
+def _load_single_feature(tweets, path):
+    id2val = load_pkl(path)
+    f = np.array([id2val.get(t["id"], 0) for t in tweets])
+    f = (f - f.mean()) / f.std()  # zscore
+    f = scipy.sparse.csr_matrix(f)
+    return f
 
 
 def load_features(tweets, feature_names):
     features = []
     for name in tqdm(feature_names):
-        id2val = load_pkl(join(DATASET_SAVE_DIR, "features", f"{name}.pkl"))
-        f = np.array([id2val.get(t["id"], 0) for t in tweets])
-        f = (f - f.mean()) / f.std()  # zscore
-        f = scipy.sparse.csr_matrix(f)
-        features.append(f)
+        features.append(
+            _load_single_feature(
+                tweets, join(DATASET_SAVE_DIR, "features", f"{name}.pkl")
+            )
+        )
     return features
+
+
+def load_vocab_feature(tweets, prefix):
+    vocab_feature_dir = join(DATASET_SAVE_DIR, f"{prefix}_features")
+    vocab = read_txt_as_str_list(join(vocab_feature_dir, "_names.txt"))
+    feature_names = [f"{prefix}: {w}" for w in vocab]
+    features = [
+        _load_single_feature(tweets, join(vocab_feature_dir, f"{w}.pkl"))
+        for w in tqdm(vocab, desc=f"vocab feature {prefix}")
+    ]
+    return feature_names, features
 
 
 def get_log_follower_features(tweets):
@@ -42,6 +66,7 @@ if __name__ == "__main__":
 
     tweets = load_pkl(DATASET_PKL_PATH)
 
+    # specifically defined features
     feature_names = [
         "economy",
         "emolex_anger",
@@ -77,12 +102,19 @@ if __name__ == "__main__":
     ]
     features = load_features(tweets, feature_names)
 
+    # add vocab features
+    # for prefix in ["2gram"]:
+    #     ns, fs = load_vocab_feature(tweets, prefix)
+    #     feature_names.extend(ns)
+    #     features.extend(fs)
+
+    # add bias and follower features
     feature_names.append("bias")
     features.append(scipy.sparse.csr_matrix(np.ones((len(tweets),))))
-
     feature_names.append("log_followers")
     features.append(get_log_follower_features(tweets))
 
+    # stack and save
     feature_matrix = scipy.sparse.vstack(features).T
     write_str_list_as_txt(feature_names, join(savedir, f"feature_names.txt"))
     scipy.sparse.save_npz(join(savedir, "feature_matrix.npz"), feature_matrix)
