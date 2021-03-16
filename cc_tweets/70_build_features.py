@@ -16,7 +16,7 @@ def load_features(tweets, feature_names):
     features = []
     for name in tqdm(feature_names):
         id2val = load_pkl(join(DATASET_SAVE_DIR, "features", f"{name}.pkl"))
-        f = np.array([id2val[t["id"]] for t in tweets])
+        f = np.array([id2val.get(t["id"], 0) for t in tweets])
         f = (f - f.mean()) / f.std()  # zscore
         f = scipy.sparse.csr_matrix(f)
         features.append(f)
