@@ -9,7 +9,7 @@ import statsmodels.api as sm
 
 from cc_tweets.experiment_config import DATASET_SAVE_DIR
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
-from cc_tweets.viz import plot_feature_weights
+from cc_tweets.viz import plot_horizontal_bars
 
 SEED = 0xDEADBEEF
 
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
         name2coef = {name: coef for name, coef in zip(feature_names, fit.params)}
         name2std = {name: std for name, std in zip(feature_names, fit.bse)}
-        plot_feature_weights(
+        plot_horizontal_bars(
             name2coef,
             save_path=join(savedir, f"coef_{name}.png"),
             title=f"coefs: lin reg on log retweets: {name}",

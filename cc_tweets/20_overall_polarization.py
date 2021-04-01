@@ -6,7 +6,7 @@ from cc_tweets.polarization import calc_dem_rep_polarization
 from cc_tweets.utils import load_pkl, mkdir_overwrite, read_txt_as_str_list, save_json
 
 NUM_TRIALS = 10
-VOCAB_FILE = join(DATASET_SAVE_DIR, "vocab", "stems_2gram_1000.txt")
+VOCAB_FILE = join(DATASET_SAVE_DIR, "vocab", "stems_2gram_4000.txt")
 SAVE_DIR = join(DATASET_SAVE_DIR, "polarization")
 
 if __name__ == "__main__":

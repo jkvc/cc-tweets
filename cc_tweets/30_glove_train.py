@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     del tweets
 
-    glove_model = GloVe(EMB_DIM, max_iter=5000, learning_rate=0.1)
+    glove_model = GloVe(EMB_DIM, max_iter=10000, learning_rate=0.1)
     embeddings = glove_model.fit(coocc)
     emb_df = pd.DataFrame(embeddings, index=list(vocab2idx.keys()))
     emb_df.to_csv(SAVE_EMB_PATH, sep="\t")

@@ -175,6 +175,7 @@ def generate_embeddings(docs, all_data, model, words2idx, dim, rmpc=1):
 
 
 if __name__ == "__main__":
+    makedirs(SAVE_RESULTS_SUPERDIR, exist_ok=True)
     embeddings_save_path = join(SAVE_RESULTS_SUPERDIR, "embeddings.pkl")
 
     tweets = load_pkl(DATASET_PKL_PATH)

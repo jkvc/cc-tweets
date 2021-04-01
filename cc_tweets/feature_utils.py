@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from cc_tweets.experiment_config import DATASET_NAME
 from cc_tweets.utils import save_json, save_pkl
+from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 
 
 def get_stats(tweets, name2id2value):
@@ -48,12 +49,74 @@ def save_features(
     save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
 ):
     makedirs(save_features_dir, exist_ok=True)
-    makedirs(save_feature_stats_dir, exist_ok=True)
     for name, id2value in name2id2value.items():
         save_pkl(id2value, join(save_features_dir, f"{name}.pkl"))
+    save_stats(tweets, name2id2value, source_name, save_feature_stats_dir)
 
+
+def save_stats(
+    tweets,
+    name2id2value,
+    source_name,
+    save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
+):
+    makedirs(save_feature_stats_dir, exist_ok=True)
     stats = get_stats(tweets, name2id2value)
     save_json(
         stats,
         join(save_feature_stats_dir, f"{source_name}.json"),
+    )
+
+    # lean
+    x_labels = list(stats.keys())
+    name2series = {
+        lean: [stats[sname]["partisan"][lean] for sname in x_labels]
+        for lean in ["dem", "rep"]
+    }
+    plot_grouped_bars(
+        x_labels,
+        name2series,
+        source_name,
+        join(save_feature_stats_dir, f"{source_name}.png"),
+    )
+
+    # # partisanship
+    # name2partisanship = {
+    #     sname: stats[sname]["partisan"]["dem"] - stats[sname]["partisan"]["rep"]
+    #     for sname in x_labels
+    # }
+    # plot_horizontal_bars(
+    #     name2partisanship,
+    #     join(save_feature_stats_dir, f"{source_name}.partisan.png"),
+    #     title=source_name,
+    # )
+
+
+def visualize_features(
+    name2id2value,
+    tweets,
+    source_name,
+    save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
+):
+    # individual feat horizontal bar
+    name2value = {
+        name: sum(id2value.values()) for name, id2value in name2id2value.items()
+    }
+    name2value = {k: v for k, v in sorted(name2value.items(), key=lambda x: x[1])}
+    plot_horizontal_bars(
+        name2value,
+        join(save_feature_stats_dir, f"{source_name}.indiv.png"),
+        title=f"{source_name} individual",
+    )
+
+    # partisanship horizontal bars
+    stats = get_stats(tweets, name2id2value)
+    name2partisanvalue = {
+        name: -stats[name]["partisan"]["dem"] + stats[name]["partisan"]["rep"]
+        for name in name2value
+    }
+    plot_horizontal_bars(
+        name2partisanvalue,
+        join(save_feature_stats_dir, f"{source_name}.partisan.png"),
+        title=f"{source_name} partisan",
     )

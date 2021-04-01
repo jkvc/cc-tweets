@@ -8,7 +8,7 @@ def grouped_bars(fig, ax, x_labels, name2series, width=0.35):
         for rect in rects:
             height = rect.get_height()
             ax.annotate(
-                "{}".format(height),
+                f"{height:.4f}",
                 xy=(rect.get_x() + rect.get_width() / 2, height),
                 xytext=(0, 3),  # 3 points vertical offset
                 textcoords="offset points",
@@ -28,24 +28,37 @@ def grouped_bars(fig, ax, x_labels, name2series, width=0.35):
     return fig, ax
 
 
-def plot_feature_weights(name2weight, save_path, title, xlim=None, yerr=None):
+def plot_grouped_bars(x_labels, name2series, title, save_path):
     plt.clf()
-    fig, ax = plt.subplots(figsize=(7, 7))
-    y_pos = np.arange(len(name2weight))
+    fig, ax = plt.subplots(figsize=(2 + len(x_labels), 7))
+    grouped_bars(fig, ax, x_labels, name2series)
+    ax.set_title(title)
+    plt.savefig(save_path)
+    plt.clf()
+
+
+def plot_horizontal_bars(
+    name2val, save_path, title, xlim=None, yerr=None, figsize=(7, 7)
+):
+    plt.clf()
+    fig, ax = plt.subplots(figsize=figsize)
+    y_pos = np.arange(len(name2val))
     ax.barh(
         y_pos,
-        name2weight.values(),
+        name2val.values(),
         align="center",
         xerr=yerr,
     )
     ax.yaxis.tick_right()
     ax.set_yticks(y_pos)
     ax.set_yticklabels(
-        [f"[{round(weight, 4)}] {name}" for name, weight in name2weight.items()],
+        [f"[{round(weight, 4)}] {name}" for name, weight in name2val.items()],
     )
     ax.set_title(title)
     if xlim:
         ax.set_xlim(xlim)
+    else:
+        ax.set_xlim((min(name2val.values()), max(name2val.values())))
     plt.subplots_adjust(left=0.1, right=0.6)
     plt.savefig(save_path)
     plt.clf()

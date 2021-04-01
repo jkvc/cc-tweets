@@ -14,6 +14,7 @@ from cc_tweets.utils import load_pkl, mkdir_overwrite, write_str_list_as_txt
 DOWNSIZEFACTOR2MINOCC = {
     100: 100,
     10: 500,
+    5: 1000,
 }
 MIN_OCCURRENCE = DOWNSIZEFACTOR2MINOCC[DOWNSIZE_FACTOR]
 SAVE_DIR = join(DATA_DIR, DATASET_NAME, "2gram_features")
