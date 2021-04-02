@@ -30,7 +30,7 @@ def grouped_bars(fig, ax, x_labels, name2series, width=0.35):
 
 def plot_grouped_bars(x_labels, name2series, title, save_path):
     plt.clf()
-    fig, ax = plt.subplots(figsize=(2 + len(x_labels), 7))
+    fig, ax = plt.subplots(figsize=(3 + len(x_labels) * 1.6, 7))
     grouped_bars(fig, ax, x_labels, name2series)
     ax.set_title(title)
     plt.savefig(save_path)

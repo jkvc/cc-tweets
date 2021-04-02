@@ -1,13 +1,13 @@
 from collections import defaultdict
-from os.path import join
 
-from config import DATA_DIR
-from nltk.stem.snowball import SnowballStemmer
+from nltk.stem import WordNetLemmatizer
+from tqdm import tqdm
 
 from cc_tweets.experiment_config import DATASET_PKL_PATH
-from cc_tweets.utils import load_pkl, save_json
+from cc_tweets.feature_utils import save_features
+from cc_tweets.utils import load_pkl
 
-PEOPLE = {
+PEOPLE = [
     "bernie",
     "obama",
     "ocasio-cortez",
@@ -21,23 +21,18 @@ PEOPLE = {
     "gore",
     "attenborough",
     "nye",
-}
-stemmer = SnowballStemmer("english")
-PEOPLE = set(stemmer.stem(w) for w in PEOPLE)
+]
+lemmatizer = WordNetLemmatizer()
 
 if __name__ == "__main__":
     tweets = load_pkl(DATASET_PKL_PATH)
+    name2namelemma = {name: lemmatizer.lemmatize(name) for name in PEOPLE}
 
-    id2numeconomy = {}
-    name2id2value = defaultdict(lambda: defaultdict(int))
-    for tweet in tweets:
-        count = 0
-        for stem in tweet["stems"]:
-            if stem in ECONOMY_WORDS:
-                count += 1
-                name2id2value[stem][tweet["id"]] += 1
+    name2id2indicator = defaultdict(lambda: defaultdict(int))
+    for tweet in tqdm(tweets):
+        for name, namelemma in name2namelemma.items():
+            for lemma in tweet["lemmas"]:
+                if lemma == namelemma:
+                    name2id2indicator[f"p_{name}"][tweet["id"]] = 1
 
-        id2numeconomy[tweet["id"]] = count
-
-    save_features(tweets, {"economy": id2numeconomy}, "economy")
-    visualize_features(name2id2value, tweets, "economy")
+    save_features(tweets, name2id2indicator, "people")
