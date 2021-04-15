@@ -8,6 +8,7 @@ from config import DATA_DIR
 from tqdm import tqdm
 
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import (
     load_json,
     load_pkl,
@@ -45,19 +46,6 @@ def load_vocab_feature(tweets, prefix):
         for w in tqdm(vocab, desc=f"vocab feature {prefix}")
     ]
     return feature_names, features
-
-
-def get_log_follower_features(tweets):
-    userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
-    followers = np.array([userid2numfollowers.get(t["userid"], 0) for t in tweets])
-    log_followers = np.log(followers + 1)
-    return scipy.sparse.csr_matrix(log_followers)
-
-
-def get_log_retweets(tweets):
-    retweets = np.array([t["retweets"] for t in tweets])
-    log_retweets = np.log(retweets + 1)
-    return scipy.sparse.csr_matrix(log_retweets)
 
 
 if __name__ == "__main__":
