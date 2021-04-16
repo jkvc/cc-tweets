@@ -77,8 +77,8 @@ def get_data_from_raw_tweet(tweet):
 
 def get_tokens(cleaned_text: str) -> List[str]:
     text = cleaned_text.lower()
-    tokens = re.findall(r"[\w']+|[.,!?;]", text)
-    tokens = [tok.replace("'", "") for tok in tokens]
+    nopunc = re.sub(r"[^\w\s\#\@]", "", text)
+    tokens = nopunc.split()
     return tokens
 
 
@@ -92,6 +92,8 @@ def get_words(cleaned_text: str) -> List[str]:
             and tok not in STOPWORDS
             and not tok in string.punctuation
             and not tok.isdigit()
+            and not tok.startswith("#")
+            and not tok.startswith("@")
         )
     ]
 

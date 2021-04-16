@@ -2,7 +2,7 @@ from os.path import join
 
 from config import DATA_DIR
 
-DOWNSIZE_FACTOR = 100
+DOWNSIZE_FACTOR = 10
 FILTER_UNK = True
 
 DATASET_NAME = (
