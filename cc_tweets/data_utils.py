@@ -94,6 +94,7 @@ def get_words(cleaned_text: str) -> List[str]:
             and not tok.isdigit()
             and not tok.startswith("#")
             and not tok.startswith("@")
+            and not tok == "amp"
         )
     ]
 

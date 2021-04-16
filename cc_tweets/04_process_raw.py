@@ -8,7 +8,7 @@ from config import DATA_DIR, RAW_DIR
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
-from cc_tweets.data_utils import parse_raw_tweet
+from cc_tweets.data_utils import get_ngrams, parse_raw_tweet
 from cc_tweets.experiment_config import DATASET_PKL_PATH, DOWNSIZE_FACTOR, FILTER_UNK
 from cc_tweets.utils import ParallelHandler, load_pkl, save_pkl
 
@@ -74,6 +74,10 @@ if __name__ == "__main__":
         save_pkl(all_tweets, DATASET_PKL_PATH)
     else:
         all_tweets = load_pkl(DATASET_PKL_PATH)
+        # for tweet in all_tweets:
+        #     bigrams = get_ngrams(tweet["stems"], 2)
+        #     if "action climat" in bigrams:
+        #         print(tweet["text"])
 
     counter = Counter(t["stance"] for t in all_tweets)
     print(counter)
