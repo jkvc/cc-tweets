@@ -8,7 +8,7 @@ from config import DATA_DIR, RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
@@ -35,7 +35,7 @@ def load_mfd():
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     valencefoundation2lemmas = load_mfd()
 
     name2id2count = defaultdict(lambda: defaultdict(float))

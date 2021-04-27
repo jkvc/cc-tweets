@@ -1,15 +1,17 @@
+# deprecated
+
+
 from collections import Counter
 from os.path import join
 
 import nltk
+from cc_tweets.data_utils import get_ngrams
+from cc_tweets.experiment_config import DOWNSIZE_FACTOR, SUBSET_NAME, SUBSET_PKL_PATH
+from cc_tweets.feature_utils import save_features
+from cc_tweets.utils import load_pkl, mkdir_overwrite, write_str_list_as_txt
 from config import DATA_DIR
 from nltk.collocations import BigramCollocationFinder
 from tqdm import tqdm
-
-from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import DATASET_NAME, DATASET_PKL_PATH, DOWNSIZE_FACTOR
-from cc_tweets.feature_utils import save_features
-from cc_tweets.utils import load_pkl, mkdir_overwrite, write_str_list_as_txt
 
 DOWNSIZEFACTOR2MINOCC = {
     100: 100,
@@ -17,7 +19,7 @@ DOWNSIZEFACTOR2MINOCC = {
     5: 1000,
 }
 MIN_OCCURRENCE = DOWNSIZEFACTOR2MINOCC[DOWNSIZE_FACTOR]
-SAVE_DIR = join(DATA_DIR, DATASET_NAME, "2gram_features")
+SAVE_DIR = join(DATA_DIR, SUBSET_NAME, "2gram_features")
 
 
 def count_ngrams(tokens, ngrams, n):
@@ -31,7 +33,7 @@ def count_ngrams(tokens, ngrams, n):
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     tokens = []
     for t in tweets:

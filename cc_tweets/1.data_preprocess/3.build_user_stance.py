@@ -3,10 +3,9 @@ from collections import Counter
 from glob import glob
 from os.path import exists, join
 
-from config import DATA_DIR, RAW_DIR
-from tqdm import tqdm
-
 from cc_tweets.utils import ParallelHandler, load_pkl, read_txt_as_str_list, save_pkl
+from config import DATA_DIR, RAW_DIR, RESOURCES_DIR
+from tqdm import tqdm
 
 
 def get_data_from_raw_tweet(tweet):
@@ -46,8 +45,8 @@ def load_profile2followers():
                 profile2followers[profile] = set(read_txt_as_str_list(followers_path))
         return profile2followers
 
-    dem_p2fs = _load(join(DATA_DIR, "profiles", "profiles_dem_unordered.txt"))
-    rep_p2fs = _load(join(DATA_DIR, "profiles", "profiles_rep_unordered.txt"))
+    dem_p2fs = _load(join(RESOURCES_DIR, "profiles", "profiles_dem_unordered.txt"))
+    rep_p2fs = _load(join(RESOURCES_DIR, "profiles", "profiles_rep_unordered.txt"))
     return dem_p2fs, rep_p2fs
 
 

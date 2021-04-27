@@ -9,7 +9,7 @@ import seaborn as sbn
 from config import DATA_DIR
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import (
     load_json,
@@ -33,14 +33,14 @@ def load_features(tweets, feature_names):
     for name in tqdm(feature_names):
         features.append(
             _load_single_feature(
-                tweets, join(DATASET_SAVE_DIR, "features", f"{name}.pkl")
+                tweets, join(SUBSET_WORKING_DIR, "features", f"{name}.pkl")
             )
         )
     return features
 
 
 def load_vocab_feature(tweets, prefix):
-    vocab_feature_dir = join(DATASET_SAVE_DIR, f"{prefix}_features")
+    vocab_feature_dir = join(SUBSET_WORKING_DIR, f"{prefix}_features")
     vocab = read_txt_as_str_list(join(vocab_feature_dir, "_names.txt"))
     feature_names = [f"{prefix}: {w}" for w in vocab]
     features = [
@@ -51,10 +51,10 @@ def load_vocab_feature(tweets, prefix):
 
 
 if __name__ == "__main__":
-    savedir = join(DATASET_SAVE_DIR, "regression_inputs")
+    savedir = join(SUBSET_WORKING_DIR, "regression_inputs")
     makedirs(savedir, exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     # specifically defined features
     feature_names = [

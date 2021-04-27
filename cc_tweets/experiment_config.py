@@ -1,14 +1,12 @@
 from os.path import join
 
-from config import DATA_DIR
+from config import WORKING_DIR
 
 DOWNSIZE_FACTOR = 100
 FILTER_UNK = True
 
-DATASET_NAME = (
-    f"tweets_downsized{DOWNSIZE_FACTOR}{'_filtered' if FILTER_UNK else '_unfiltered'}"
-)
-DATASET_PKL_PATH = join(DATA_DIR, f"{DATASET_NAME}.pkl")
-DATASET_SAVE_DIR = join(DATA_DIR, DATASET_NAME)
+SUBSET_NAME = f"downsized{DOWNSIZE_FACTOR}.{'filtered' if FILTER_UNK else 'unfiltered'}"
+SUBSET_WORKING_DIR = join(WORKING_DIR, SUBSET_NAME)
+SUBSET_PKL_PATH = join(SUBSET_WORKING_DIR, "tweets.pkl")
 
 EMB_DIM = 50

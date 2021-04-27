@@ -11,7 +11,7 @@ from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
 
@@ -20,12 +20,12 @@ NGRAM = 1
 VOCAB_SIZE = 4000
 
 if __name__ == "__main__":
-    savedir = join(DATASET_SAVE_DIR, "linreg_ngram")
+    savedir = join(SUBSET_WORKING_DIR, "linreg_ngram")
     makedirs(savedir, exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     bidx2bigram = read_txt_as_str_list(
-        join(DATASET_SAVE_DIR, "vocab", f"{TOKTYPE}_{NGRAM}gram_{VOCAB_SIZE}.txt")
+        join(SUBSET_WORKING_DIR, "vocab", f"{TOKTYPE}_{NGRAM}gram_{VOCAB_SIZE}.txt")
     )
     bigram2bidx = {bigram: i for i, bigram in enumerate(bidx2bigram)}
 

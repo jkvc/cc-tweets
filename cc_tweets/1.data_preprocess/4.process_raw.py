@@ -1,16 +1,34 @@
 import json
-from collections import Counter
+from collections import Counter, OrderedDict
+from datetime import datetime
 from glob import glob
+from os import makedirs, mkdir
 from os.path import exists, join
+from pprint import pprint
 from typing import List
 
+import matplotlib.pyplot as plt
+from cc_tweets.data_utils import get_ngrams, parse_raw_tweet
+from cc_tweets.experiment_config import (
+    DOWNSIZE_FACTOR,
+    FILTER_UNK,
+    SUBSET_PKL_PATH,
+    SUBSET_WORKING_DIR,
+)
+from cc_tweets.utils import (
+    ParallelHandler,
+    load_pkl,
+    mkdir_overwrite,
+    save_json,
+    save_pkl,
+)
 from config import DATA_DIR, RAW_DIR
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
-from cc_tweets.data_utils import get_ngrams, parse_raw_tweet
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DOWNSIZE_FACTOR, FILTER_UNK
-from cc_tweets.utils import ParallelHandler, load_pkl, save_pkl
+# Fri Nov 30 19:41:04 +0000 2018
+TIME_FORMAT = "%a %b %d %H:%M:%S %z %Y"
+
 
 STOPWORDS = stopwords.words("english")
 
@@ -68,16 +86,48 @@ def get_all_tweets_from_raw_tweets():
     return all_tweets
 
 
+def _save_stats(tweets):
+    stats_dir = join(SUBSET_WORKING_DIR, "overall_stats")
+    mkdir_overwrite(stats_dir)
+
+    # count stances
+    stances = dict(Counter(t["stance"] for t in tweets))
+    plt.bar(stances.keys(), stances.values())
+    plt.savefig(join(stats_dir, "stances_count.png"))
+    plt.clf()
+
+    # count time
+    times = [datetime.strptime(tweet["time"], TIME_FORMAT) for tweet in tweets]
+    # aggregate by year
+    yyyymms = [f"{t.year}" for t in times]
+    agg_year = dict(Counter(yyyymms))
+    agg_year = OrderedDict(sorted(agg_year.items()))
+    pprint(agg_year)
+    plt.bar(agg_year.keys(), agg_year.values())
+    plt.savefig(join(stats_dir, "agg_year.png"))
+    plt.clf()
+
+    # various metrics
+    metrics = {}
+    metrics["total"] = len(tweets)
+    metrics["stances"] = stances
+    metrics["unique_tweeter"] = len(set(t["userid"] for t in tweets))
+    metrics["mean_raw_len"] = sum(len(t["text"]) for t in tweets) / len(tweets)
+    metrics["mean_num_stem"] = sum(len(t["stems"]) for t in tweets) / len(tweets)
+    metrics["mean_num_hashtags"] = sum(len(t["hashtags"]) for t in tweets) / len(tweets)
+    save_json(metrics, join(stats_dir, "metrics.json"))
+
+
 if __name__ == "__main__":
-    if not exists(DATASET_PKL_PATH):
+    makedirs(SUBSET_WORKING_DIR, exist_ok=True)
+
+    if not exists(SUBSET_PKL_PATH):
         all_tweets = get_all_tweets_from_raw_tweets()
-        save_pkl(all_tweets, DATASET_PKL_PATH)
+        save_pkl(all_tweets, SUBSET_PKL_PATH)
     else:
-        all_tweets = load_pkl(DATASET_PKL_PATH)
-        # for tweet in all_tweets:
-        #     bigrams = get_ngrams(tweet["stems"], 2)
-        #     if "action climat" in bigrams:
-        #         print(tweet["text"])
+        all_tweets = load_pkl(SUBSET_PKL_PATH)
 
     counter = Counter(t["stance"] for t in all_tweets)
     print(counter)
+
+    _save_stats(all_tweets)

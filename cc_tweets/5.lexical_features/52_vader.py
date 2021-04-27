@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH
+from cc_tweets.experiment_config import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features
 from cc_tweets.utils import ParallelHandler, load_pkl
 
@@ -14,7 +14,7 @@ def get_id0vaderscores(id, text):
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     sid = SentimentIntensityAnalyzer()
 

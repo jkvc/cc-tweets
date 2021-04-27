@@ -3,7 +3,7 @@ from os.path import join
 from config import RESOURCES_DIR
 from nltk.stem.snowball import SnowballStemmer
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH
+from cc_tweets.experiment_config import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
@@ -37,7 +37,7 @@ def load_subj_lex():
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     strong_subj_stems, weak_subj_stems = load_subj_lex()
 

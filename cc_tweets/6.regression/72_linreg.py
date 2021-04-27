@@ -7,7 +7,7 @@ import numpy as np
 import scipy.sparse
 import statsmodels.api as sm
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_horizontal_bars
 
@@ -26,12 +26,12 @@ FEATURE_FILTER = [
 ]
 
 if __name__ == "__main__":
-    savedir = join(DATASET_SAVE_DIR, "linreg")
+    savedir = join(SUBSET_WORKING_DIR, "linreg")
     makedirs(savedir, exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
-    regin_dir = join(DATASET_SAVE_DIR, "regression_inputs")
+    regin_dir = join(SUBSET_WORKING_DIR, "regression_inputs")
     feature_matrix = scipy.sparse.load_npz(join(regin_dir, "feature_matrix.npz"))
     feature_names = read_txt_as_str_list(join(regin_dir, f"feature_names.txt"))
     if FEATURE_FILTER is not None:

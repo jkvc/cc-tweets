@@ -6,23 +6,23 @@ import numpy as np
 from config import DATA_DIR
 from nltk.stem.snowball import SnowballStemmer
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.polarization import calc_dem_rep_polarization
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_horizontal_bars
 
 NUM_TRIALS = 10
-VOCAB_FILE = join(DATASET_SAVE_DIR, "vocab", "stems_2gram_4000.txt")
+VOCAB_FILE = join(SUBSET_WORKING_DIR, "vocab", "stems_2gram_4000.txt")
 
 NUM_CLUSTERS = 10
 SAVE_JSON_PATH = join(
-    DATASET_SAVE_DIR,
+    SUBSET_WORKING_DIR,
     "sif",
     f"{NUM_CLUSTERS}clusters",
     "intra_topic_pol.json",
 )
 SAVE_PNG_PATH = join(
-    DATASET_SAVE_DIR,
+    SUBSET_WORKING_DIR,
     "sif",
     f"{NUM_CLUSTERS}clusters",
     "intra_topic_pol.png",
@@ -31,7 +31,7 @@ SAVE_PNG_PATH = join(
 if __name__ == "__main__":
     cluster_names = read_txt_as_str_list(
         join(
-            DATASET_SAVE_DIR,
+            SUBSET_WORKING_DIR,
             "sif",
             f"{NUM_CLUSTERS}clusters",
             "cluster_names.txt",
@@ -40,10 +40,10 @@ if __name__ == "__main__":
     vocab2idx = {gram: i for i, gram in enumerate(read_txt_as_str_list(VOCAB_FILE))}
 
     if not exists(SAVE_JSON_PATH):
-        tweets = load_pkl(DATASET_PKL_PATH)
+        tweets = load_pkl(SUBSET_PKL_PATH)
         assignments = load_pkl(
             join(
-                DATASET_SAVE_DIR,
+                SUBSET_WORKING_DIR,
                 "sif",
                 f"{NUM_CLUSTERS}clusters",
                 "cluster_assignments.pkl",

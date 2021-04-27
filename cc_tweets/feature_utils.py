@@ -7,7 +7,7 @@ import scipy
 from config import DATA_DIR
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import DATASET_NAME
+from cc_tweets.experiment_config import SUBSET_NAME
 from cc_tweets.utils import load_json, save_json, save_pkl
 from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 
@@ -60,8 +60,8 @@ def save_features(
     tweets,
     name2id2value,
     source_name,
-    save_features_dir=join(DATA_DIR, DATASET_NAME, "features"),
-    save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
+    save_features_dir=join(DATA_DIR, SUBSET_NAME, "features"),
+    save_feature_stats_dir=join(DATA_DIR, SUBSET_NAME, "feature_stats"),
 ):
     makedirs(save_features_dir, exist_ok=True)
     for name, id2value in name2id2value.items():
@@ -73,7 +73,7 @@ def save_stats(
     tweets,
     name2id2value,
     source_name,
-    save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
+    save_feature_stats_dir=join(DATA_DIR, SUBSET_NAME, "feature_stats"),
 ):
     makedirs(save_feature_stats_dir, exist_ok=True)
     stats = get_stats(tweets, name2id2value)
@@ -111,7 +111,7 @@ def visualize_features(
     name2id2value,
     tweets,
     source_name,
-    save_feature_stats_dir=join(DATA_DIR, DATASET_NAME, "feature_stats"),
+    save_feature_stats_dir=join(DATA_DIR, SUBSET_NAME, "feature_stats"),
 ):
     # individual feat horizontal bar
     name2value = {

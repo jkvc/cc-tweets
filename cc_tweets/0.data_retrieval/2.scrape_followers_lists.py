@@ -1,11 +1,10 @@
 from os.path import exists, join
 from time import sleep
 
-from config import DATA_DIR
-from twarc import Twarc
-
 from cc_tweets.credentials import AUTHS, Auth
 from cc_tweets.utils import ParallelHandler, read_txt_as_str_list, write_str_list_as_txt
+from config import DATA_DIR, RESOURCES_DIR
+from twarc import Twarc
 
 
 def is_complete(username):
@@ -34,7 +33,7 @@ def scrape_follower(username: str, auth: Auth):
 
 
 if __name__ == "__main__":
-    profiles = read_txt_as_str_list(join(DATA_DIR, "profiles", "profiles_all.txt"))
+    profiles = read_txt_as_str_list(join(RESOURCES_DIR, "profiles", "profiles_all.txt"))
     print(len(profiles))
     profiles = [user.lower() for user in profiles if not is_complete(user)]
     print(len(profiles))

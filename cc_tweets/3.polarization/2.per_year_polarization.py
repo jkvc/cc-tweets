@@ -3,19 +3,19 @@ from os.path import join
 from pprint import pprint
 
 from cc_tweets.data_utils import get_tweet_time
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.polarization import calc_dem_rep_polarization
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 
 NUM_TRIALS = 10
-VOCAB_FILE = join(DATASET_SAVE_DIR, "vocab", "stems_2gram_4000.txt")
-SAVE_DIR = join(DATASET_SAVE_DIR, "polarization")
+VOCAB_FILE = join(SUBSET_WORKING_DIR, "vocab", "stems_2gram_4000.txt")
+SAVE_DIR = join(SUBSET_WORKING_DIR, "polarization")
 
 
 YEARS = [2017, 2018, 2019]
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     vocab2idx = {gram: i for i, gram in enumerate(read_txt_as_str_list(VOCAB_FILE))}
 
     year2avgpol = {}

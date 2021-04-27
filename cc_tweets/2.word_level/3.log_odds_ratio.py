@@ -6,13 +6,8 @@ from typing import Dict, List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from config import DATA_DIR
-from nltk.corpus import stopwords
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from tqdm import tqdm, trange
-
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import (
     ParallelHandler,
     load_pkl,
@@ -20,6 +15,10 @@ from cc_tweets.utils import (
     save_json,
     write_str_list_as_txt,
 )
+from config import DATA_DIR
+from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from tqdm import tqdm, trange
 
 STOPWORDS = stopwords.words("english")
 MIN_WORD_COUNT = 20
@@ -105,12 +104,12 @@ def get_topn_lors(dem_tweets, rep_tweets, tok_type, ngrams, top_n=50):
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     dem_tweets = [t for t in tweets if t["stance"] == "dem"]
     rep_tweets = [t for t in tweets if t["stance"] == "rep"]
 
-    savedir = join(DATASET_SAVE_DIR, "log_odds")
+    savedir = join(SUBSET_WORKING_DIR, "log_odds")
     mkdir_overwrite(savedir)
 
     for tok_type, ngrams in [
@@ -124,9 +123,7 @@ if __name__ == "__main__":
             dem_tweets, rep_tweets, tok_type, ngrams
         )
 
-        write_str_list_as_txt(
-            dem_topwords, join(savedir, f"{tok_type}_{ngrams}.dem.txt")
-        )
-        write_str_list_as_txt(
-            rep_topwords, join(savedir, f"{tok_type}_{ngrams}.rep.txt")
-        )
+        df = pd.DataFrame()
+        df["dem"] = dem_topwords
+        df["rep"] = rep_topwords
+        df.to_csv(join(savedir, f"{tok_type}_{ngrams}.csv"))

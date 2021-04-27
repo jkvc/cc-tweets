@@ -6,15 +6,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from config import DATA_DIR
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
 
-SAVE_DIR = join(DATASET_SAVE_DIR, "engagement")
+SAVE_DIR = join(SUBSET_WORKING_DIR, "engagement")
 
 if __name__ == "__main__":
     makedirs(SAVE_DIR, exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
     mean_num_followers = sum(userid2numfollowers.values()) / len(userid2numfollowers)
 

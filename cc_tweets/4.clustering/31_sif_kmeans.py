@@ -12,13 +12,13 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm, trange
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR, EMB_DIM
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR, EMB_DIM
 from cc_tweets.utils import load_pkl, save_json, save_pkl
 
-EMB_PATH = join(DATASET_SAVE_DIR, "glove", f"glove.{EMB_DIM}.csv")
+EMB_PATH = join(SUBSET_WORKING_DIR, "glove", f"glove.{EMB_DIM}.csv")
 
 NUM_CLUSTERS = [7, 10, 20]
-SAVE_RESULTS_SUPERDIR = join(DATASET_SAVE_DIR, "sif")
+SAVE_RESULTS_SUPERDIR = join(SUBSET_WORKING_DIR, "sif")
 
 MAXLEN = 1000
 PRINT_EVERY = 5000
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     makedirs(SAVE_RESULTS_SUPERDIR, exist_ok=True)
     embeddings_save_path = join(SAVE_RESULTS_SUPERDIR, "embeddings.pkl")
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     if not exists(embeddings_save_path):
         vectors = pd.read_csv(EMB_PATH, sep="\t", index_col=0)
         vocab2idx = {w: i for i, w in enumerate(vectors.index.values)}

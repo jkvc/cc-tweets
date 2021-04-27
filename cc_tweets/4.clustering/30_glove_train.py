@@ -10,14 +10,14 @@ from mittens import GloVe
 from tqdm import tqdm
 
 from cc_tweets.data_utils import load_vocab2idx
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR, EMB_DIM
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR, EMB_DIM
 from cc_tweets.utils import load_pkl
 
 TOKEN_TYPE = "stems"
 VOCAB_SIZE = 4000
-VOCAB_PATH = join(DATASET_SAVE_DIR, "vocab", f"{TOKEN_TYPE}_1gram_{VOCAB_SIZE}.txt")
+VOCAB_PATH = join(SUBSET_WORKING_DIR, "vocab", f"{TOKEN_TYPE}_1gram_{VOCAB_SIZE}.txt")
 
-SAVE_EMB_PATH = join(DATASET_SAVE_DIR, "glove", f"glove.{EMB_DIM}.csv")
+SAVE_EMB_PATH = join(SUBSET_WORKING_DIR, "glove", f"glove.{EMB_DIM}.csv")
 
 
 def build_coocc_matrix(tweets, vocab2idx):
@@ -43,7 +43,7 @@ def build_coocc_matrix(tweets, vocab2idx):
 if __name__ == "__main__":
     makedirs(dirname(SAVE_EMB_PATH), exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     vocab2idx = load_vocab2idx(VOCAB_PATH)
     coocc = build_coocc_matrix(tweets, vocab2idx)
 

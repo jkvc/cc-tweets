@@ -1,17 +1,9 @@
-from os.path import exists, join
-from time import sleep
+from os.path import join
 
+from cc_tweets.credentials import AUTHS
+from cc_tweets.utils import ParallelHandler, load_pkl, save_json
 from config import DATA_DIR
 from twarc import Twarc
-
-from cc_tweets.credentials import AUTHS, Auth
-from cc_tweets.utils import (
-    ParallelHandler,
-    load_pkl,
-    read_txt_as_str_list,
-    save_json,
-    write_str_list_as_txt,
-)
 
 
 def count_followers(userids, auth):

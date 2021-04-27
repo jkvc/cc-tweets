@@ -5,7 +5,7 @@ from config import RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH
+from cc_tweets.experiment_config import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
@@ -39,7 +39,7 @@ def load_emolex_emo2lemma2score():
 
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
     emo2lemma2score = load_emolex_emo2lemma2score()
 
     name2id2score = defaultdict(lambda: defaultdict(float))

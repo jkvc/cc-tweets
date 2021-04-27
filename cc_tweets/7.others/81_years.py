@@ -12,7 +12,7 @@ from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
+from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 
@@ -33,10 +33,10 @@ NAME0FUNC = [
 ]
 
 if __name__ == "__main__":
-    savedir = join(DATASET_SAVE_DIR, "misc")
+    savedir = join(SUBSET_WORKING_DIR, "misc")
     makedirs(savedir, exist_ok=True)
 
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     for name, func in NAME0FUNC:
         val2count = func(tweets)

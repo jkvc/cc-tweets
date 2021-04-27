@@ -3,7 +3,7 @@ from typing import DefaultDict
 
 from nltk.stem.snowball import SnowballStemmer
 
-from cc_tweets.experiment_config import DATASET_PKL_PATH
+from cc_tweets.experiment_config import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features, visualize_features
 from cc_tweets.utils import load_pkl
 
@@ -39,7 +39,7 @@ stemmer = SnowballStemmer("english")
 ECONOMY_WORDS = set(stemmer.stem(w) for w in ECONOMY_WORDS)
 
 if __name__ == "__main__":
-    tweets = load_pkl(DATASET_PKL_PATH)
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
     id2numeconomy = {}
     name2id2value = defaultdict(lambda: defaultdict(int))
