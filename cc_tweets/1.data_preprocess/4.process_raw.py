@@ -8,7 +8,7 @@ from pprint import pprint
 from typing import List
 
 import matplotlib.pyplot as plt
-from cc_tweets.data_utils import get_ngrams, parse_raw_tweet
+from cc_tweets.data_utils import parse_raw_tweet
 from cc_tweets.experiment_config import (
     DOWNSIZE_FACTOR,
     FILTER_UNK,
@@ -17,6 +17,7 @@ from cc_tweets.experiment_config import (
 )
 from cc_tweets.utils import (
     ParallelHandler,
+    load_json,
     load_pkl,
     mkdir_overwrite,
     save_json,
@@ -29,13 +30,14 @@ from tqdm import tqdm
 # Fri Nov 30 19:41:04 +0000 2018
 TIME_FORMAT = "%a %b %d %H:%M:%S %z %Y"
 
-
 STOPWORDS = stopwords.words("english")
+
+INVALIDATE_CACHE = False
 
 
 def process_tweets_from_raw(jsonl_path):
     cache_path = f"{jsonl_path}.{DOWNSIZE_FACTOR}.pkl"
-    if exists(cache_path):
+    if not INVALIDATE_CACHE and exists(cache_path):
         return
 
     userid2stance_path = join(DATA_DIR, "userid2stance.pkl")
@@ -72,6 +74,31 @@ def merge_tweets_from_processed_raw(jsonl_paths):
     return all_tweets
 
 
+def dedup(all_tweets):
+    tid2tweets = {}
+    for t in all_tweets:
+        tid = t["id"]
+        if tid in tid2tweets:
+            tid2tweets[tid]["retweeter_userids"].update(t["retweeter_userids"])
+        else:
+            tid2tweets[tid] = t
+    return tid2tweets
+
+
+def populate_followers_inplace(all_tweets):
+    userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
+
+    def get_num_follower(userid):
+        return userid2numfollowers.get(userid, 0)
+
+    for t in all_tweets:
+        t["num_follower"] = get_num_follower(t["userid"])
+        all_tweeter_userids = t["retweeter_userids"].union({t["userid"]})
+        t["max_num_follower"] = max(
+            get_num_follower(userid) for userid in all_tweeter_userids
+        )
+
+
 def get_all_tweets_from_raw_tweets():
     all_jsonl_paths = sorted(glob(join(RAW_DIR, "tweets", "*.jsonl")))
     # process
@@ -80,8 +107,9 @@ def get_all_tweets_from_raw_tweets():
     # merge
     all_tweets = merge_tweets_from_processed_raw(all_jsonl_paths)
     # dedup
-    id2tweets = {t["id"]: t for t in all_tweets}
+    id2tweets = dedup(all_tweets)
     all_tweets = list(id2tweets.values())
+    populate_followers_inplace(all_tweets)
 
     return all_tweets
 
@@ -115,13 +143,19 @@ def _save_stats(tweets):
     metrics["mean_raw_len"] = sum(len(t["text"]) for t in tweets) / len(tweets)
     metrics["mean_num_stem"] = sum(len(t["stems"]) for t in tweets) / len(tweets)
     metrics["mean_num_hashtags"] = sum(len(t["hashtags"]) for t in tweets) / len(tweets)
+    metrics["mean_num_follower"] = sum((t["num_follower"]) for t in tweets) / len(
+        tweets
+    )
+    metrics["mean_max_num_follower"] = sum(
+        (t["max_num_follower"]) for t in tweets
+    ) / len(tweets)
     save_json(metrics, join(stats_dir, "metrics.json"))
 
 
 if __name__ == "__main__":
     makedirs(SUBSET_WORKING_DIR, exist_ok=True)
 
-    if not exists(SUBSET_PKL_PATH):
+    if not exists(SUBSET_PKL_PATH) or INVALIDATE_CACHE:
         all_tweets = get_all_tweets_from_raw_tweets()
         save_pkl(all_tweets, SUBSET_PKL_PATH)
     else:

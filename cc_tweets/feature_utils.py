@@ -12,9 +12,9 @@ from cc_tweets.utils import load_json, save_json, save_pkl
 from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 
 
-def get_log_follower_features(tweets):
-    userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
-    followers = np.array([userid2numfollowers.get(t["userid"], 0) for t in tweets])
+def get_log_follower_features(tweets, source="num_follower"):
+    assert source in ["num_follower", "max_num_follower"]
+    followers = np.array([t[source] for t in tweets])
     log_followers = np.log(followers + 1)
     return scipy.sparse.csr_matrix(log_followers)
 

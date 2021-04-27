@@ -42,7 +42,7 @@ def load_vocab2idx(txt_path):
 
 
 def parse_raw_tweet(tweet):
-    tweet = get_data_from_raw_tweet(tweet)
+    tweet, retweeter = get_data_from_raw_tweet(tweet)
 
     if "full_text" not in tweet:
         return None
@@ -66,6 +66,7 @@ def parse_raw_tweet(tweet):
         "stems": stems,
         "lemmas": lemmas,
         "lang": tweet["lang"],
+        "retweeter_userids": {retweeter} if retweeter is not None else set(),
     }
     return tweet_data
 
@@ -73,9 +74,9 @@ def parse_raw_tweet(tweet):
 def get_data_from_raw_tweet(tweet):
     if "retweeted_status" in tweet:
         # do the 'dereference' if it's a retweet
-        return tweet["retweeted_status"]
+        return tweet["retweeted_status"], tweet["user"]["id_str"]
     else:
-        return tweet
+        return tweet, None
 
 
 def get_tokens(cleaned_text: str) -> List[str]:

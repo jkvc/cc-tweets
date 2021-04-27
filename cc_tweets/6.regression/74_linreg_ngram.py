@@ -6,14 +6,11 @@ import numpy as np
 import pandas as pd
 import scipy.sparse
 import statsmodels.api as sm
-from config import RESOURCES_DIR
-from nltk.stem import WordNetLemmatizer
-from tqdm import tqdm
-
 from cc_tweets.data_utils import get_ngrams
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
+from tqdm import tqdm
 
 TOKTYPE = "lemmas"
 NGRAM = 1
@@ -36,7 +33,8 @@ if __name__ == "__main__":
         for bigram in bigrams:
             if bigram in bigram2bidx:
                 bidx = bigram2bidx[bigram]
-                feature_matrix[bidx, tidx] += 1
+                # feature_matrix[bidx, tidx] += 1
+                feature_matrix[bidx, tidx] = 1
 
     features = []
     feature_names = []
@@ -51,7 +49,7 @@ if __name__ == "__main__":
     feature_names.append("bias")
     features.append(scipy.sparse.csr_matrix(np.ones((len(tweets),))))
     feature_names.append("log_followers")
-    features.append(get_log_follower_features(tweets))
+    features.append(get_log_follower_features(tweets, source="max_num_follower"))
 
     # stack
     feature_matrix = scipy.sparse.vstack(features).T.toarray()

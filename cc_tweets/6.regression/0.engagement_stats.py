@@ -4,10 +4,9 @@ from pprint import pprint
 
 import matplotlib.pyplot as plt
 import numpy as np
-from config import DATA_DIR
-
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
+from config import DATA_DIR
 
 SAVE_DIR = join(SUBSET_WORKING_DIR, "engagement")
 
@@ -47,13 +46,13 @@ if __name__ == "__main__":
 
     fig, axes = plt.subplots(ncols=2, nrows=2, figsize=(16, 16))
 
-    # n_retweet v follower
-    follower0rts = [(_get_num_followers(t["userid"]), t["retweets"]) for t in tweets]
+    # n_retweet v max_num_follower
+    follower0rts = [(t["max_num_follower"], t["retweets"]) for t in tweets]
     followers, rts = unzip(follower0rts)
     followers, rts = np.array(followers), np.array(rts)
     axes[0][0].scatter(followers, rts, marker=".")
-    axes[0][0].set_title("retweets v followers")
-    axes[0][0].set_xlabel("followers")
+    axes[0][0].set_title("retweets v max_followers")
+    axes[0][0].set_xlabel("max_followers")
     axes[0][0].set_ylabel("rts")
     c1, c0 = np.polyfit(followers, rts, 1)
     linreg_fn = np.poly1d([c1, c0])
@@ -71,8 +70,8 @@ if __name__ == "__main__":
     log_followers = np.log(np.array(followers) + 1)
     log_rts = np.log(np.array(rts) + 1)
     axes[0][1].scatter(log_followers, log_rts, marker=".")
-    axes[0][1].set_title("log retweets v log followers")
-    axes[0][1].set_xlabel("log followers")
+    axes[0][1].set_title("log retweets v log max_followers")
+    axes[0][1].set_xlabel("log max_followers")
     axes[0][1].set_ylabel("log rts")
     c1, c0 = np.polyfit(log_followers, log_rts, 1)
     linreg_fn = np.poly1d([c1, c0])
@@ -86,43 +85,43 @@ if __name__ == "__main__":
         "lower": int((log_rts < preds).sum()),
     }
 
-    # n_like v follower
-    follower0likes = [(_get_num_followers(t["userid"]), t["likes"]) for t in tweets]
-    followers, likes = unzip(follower0likes)
-    followers, likes = np.array(followers), np.array(likes)
-    axes[1][0].scatter(followers, likes, marker=".")
-    axes[1][0].set_title("likes v followers")
+    # n_retweet v follower
+    follower0rts = [(t["num_follower"], t["retweets"]) for t in tweets]
+    followers, rts = unzip(follower0rts)
+    followers, rts = np.array(followers), np.array(rts)
+    axes[1][0].scatter(followers, rts, marker=".")
+    axes[1][0].set_title("retweets v followers")
     axes[1][0].set_xlabel("followers")
-    axes[1][0].set_ylabel("likes")
-    c1, c0 = np.polyfit(followers, likes, 1)
+    axes[1][0].set_ylabel("rts")
+    c1, c0 = np.polyfit(followers, rts, 1)
     linreg_fn = np.poly1d([c1, c0])
     linespace = np.linspace(followers.min(), followers.max(), 20)
     axes[1][0].plot(linespace, linreg_fn(linespace), color="red")
     preds = linreg_fn(followers)
-    stats["likes"] = {
+    stats["rt"] = {
         "c0": c0,
         "c1": c1,
-        "higher": int((likes >= preds).sum()),
-        "lower": int((likes < preds).sum()),
+        "higher": int((rts >= preds).sum()),
+        "lower": int((rts < preds).sum()),
     }
 
-    # log n_like v follower
+    # log n_retweet v follower
     log_followers = np.log(np.array(followers) + 1)
-    log_likes = np.log(np.array(likes) + 1)
-    axes[1][1].scatter(log_followers, log_likes, marker=".")
-    axes[1][1].set_title("log likes v log followers")
+    log_rts = np.log(np.array(rts) + 1)
+    axes[1][1].scatter(log_followers, log_rts, marker=".")
+    axes[1][1].set_title("log retweets v log followers")
     axes[1][1].set_xlabel("log followers")
-    axes[1][1].set_ylabel("log likes")
-    c1, c0 = np.polyfit(log_followers, log_likes, 1)
+    axes[1][1].set_ylabel("log rts")
+    c1, c0 = np.polyfit(log_followers, log_rts, 1)
     linreg_fn = np.poly1d([c1, c0])
     linespace = np.linspace(log_followers.min(), log_followers.max(), 20)
     axes[1][1].plot(linespace, linreg_fn(linespace), color="red")
     preds = linreg_fn(log_followers)
-    stats["log_likes"] = {
+    stats["log_rt"] = {
         "c0": c0,
         "c1": c1,
-        "higher": int((log_likes >= preds).sum()),
-        "lower": int((log_likes < preds).sum()),
+        "higher": int((log_rts >= preds).sum()),
+        "lower": int((log_rts < preds).sum()),
     }
 
     plt.savefig(join(SAVE_DIR, "stats.png"))
