@@ -15,8 +15,9 @@ from cc_tweets.experiment_config import DATASET_PKL_PATH, DATASET_SAVE_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
 
-TOKTYPE = "stems"
-NGRAM = 3
+TOKTYPE = "lemmas"
+NGRAM = 1
+VOCAB_SIZE = 4000
 
 if __name__ == "__main__":
     savedir = join(DATASET_SAVE_DIR, "linreg_ngram")
@@ -24,14 +25,14 @@ if __name__ == "__main__":
 
     tweets = load_pkl(DATASET_PKL_PATH)
     bidx2bigram = read_txt_as_str_list(
-        join(DATASET_SAVE_DIR, "vocab", f"{TOKTYPE}_{NGRAM}gram_300.txt")
+        join(DATASET_SAVE_DIR, "vocab", f"{TOKTYPE}_{NGRAM}gram_{VOCAB_SIZE}.txt")
     )
     bigram2bidx = {bigram: i for i, bigram in enumerate(bidx2bigram)}
 
     feature_matrix = scipy.sparse.lil_matrix((len(bidx2bigram), len(tweets)))
 
     for tidx, tweet in enumerate(tqdm(tweets)):
-        bigrams = get_ngrams(tweet["stems"], NGRAM)
+        bigrams = get_ngrams(tweet[TOKTYPE], NGRAM)
         for bigram in bigrams:
             if bigram in bigram2bidx:
                 bidx = bigram2bidx[bigram]

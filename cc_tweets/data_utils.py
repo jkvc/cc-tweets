@@ -48,8 +48,10 @@ def parse_raw_tweet(tweet):
         return None
     text = tweet["full_text"]
     toks = get_words(remove_urls(text))
-    stems = get_stems(toks)
-    lemmas = get_lemmas(toks)
+
+    no_numbers = replace_numbers(toks)
+    stems = get_stems(no_numbers)
+    lemmas = get_lemmas(no_numbers)
 
     tweet_data = {
         "id": tweet["id_str"],
@@ -60,6 +62,7 @@ def parse_raw_tweet(tweet):
         "username": tweet["user"]["screen_name"],
         "hashtags": tweet["entities"]["hashtags"],
         "text": text,
+        "toks": toks,
         "stems": stems,
         "lemmas": lemmas,
         "lang": tweet["lang"],
@@ -91,7 +94,6 @@ def get_words(cleaned_text: str) -> List[str]:
             len(tok) > 0
             and tok not in STOPWORDS
             and not tok in string.punctuation
-            and not tok.isdigit()
             and not tok.startswith("#")
             and not tok.startswith("@")
             and not tok == "amp"
@@ -103,6 +105,11 @@ def remove_urls(text: str) -> str:
     tokens = text.split()
     tokens = [tok for tok in tokens if not validators.url(tok)]
     return " ".join(tokens)
+
+
+def replace_numbers(tokens: List[str]) -> List[str]:
+    tokens = [w if not w.isdigit() else "[NUM]" for w in tokens]
+    return tokens
 
 
 def get_stems(tokens: List[str]) -> List[str]:

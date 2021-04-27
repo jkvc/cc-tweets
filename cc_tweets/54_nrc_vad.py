@@ -30,7 +30,7 @@ def load_vad2lemma2score():
             word, score = line.split("\t")
             lemma = lemmatizer.lemmatize(word)
             score = float(score)
-            vad2lemma2score[vad][lemma] = score
+            vad2lemma2score[vad][lemma] = score - 0.5  # map [0,1] to [-.5, 5]
     return dict(vad2lemma2score)
 
 

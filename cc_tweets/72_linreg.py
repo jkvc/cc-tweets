@@ -13,17 +13,17 @@ from cc_tweets.viz import plot_horizontal_bars
 
 SEED = 0xDEADBEEF
 
-FEATURE_FILTER = None
-# FEATURE_FILTER = [
-#     "negation",
-#     "subj_combined",
-#     "vad_arousal",
-#     "vad_dominance",
-#     "vad_valence",
-#     # "vader_compound",
-#     "bias",
-#     "log_followers",
-# ]
+# FEATURE_FILTER = None
+FEATURE_FILTER = [
+    # "negation",
+    # "subj_combined",
+    "vad_arousal",
+    "vad_dominance",
+    # "vad_valence",
+    "vader_compound",
+    "bias",
+    "log_followers",
+]
 
 if __name__ == "__main__":
     savedir = join(DATASET_SAVE_DIR, "linreg")

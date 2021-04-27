@@ -3,7 +3,9 @@ from os.path import join
 from pprint import pprint
 
 import numpy as np
+import pandas as pd
 import scipy.sparse
+import seaborn as sbn
 from config import DATA_DIR
 from tqdm import tqdm
 
@@ -67,18 +69,18 @@ if __name__ == "__main__":
         "emolex_trust",
         "natural_disasters",
         "negation",
-        "p_aoc",
-        "p_attenborough",
-        "p_bernie",
-        "p_biden",
-        "p_clinton",
-        "p_gore",
-        "p_inslee",
-        "p_nye",
-        "p_obama",
-        "p_pruitt",
-        "p_thunberg",
-        "p_trump",
+        # "p_aoc",
+        # "p_attenborough",
+        # "p_bernie",
+        # "p_biden",
+        # "p_clinton",
+        # "p_gore",
+        # "p_inslee",
+        # "p_nye",
+        # "p_obama",
+        # "p_pruitt",
+        # "p_thunberg",
+        # "p_trump",
         "subj_combined",
         # "subj_strong",
         # "subj_weak",
@@ -126,3 +128,31 @@ if __name__ == "__main__":
     idxs_rep = [i for i, t in enumerate(tweets) if t["stance"] == "rep"]
     save_pkl(idxs_dem, join(savedir, "idxs_dem.pkl"))
     save_pkl(idxs_rep, join(savedir, "idxs_rep.pkl"))
+
+    subsample_idxs = np.random.choice(
+        list(range(len(tweets))), replace=False, size=1000
+    )
+    feats_to_plot = {
+        "emolex_anger",
+        "emolex_anticipation",
+        "emolex_disgust",
+        "emolex_fear",
+        "emolex_joy",
+        "emolex_sadness",
+        "emolex_surprise",
+        "emolex_trust",
+        "negation",
+        "subj_combined",
+        "vad_arousal",
+        "vad_dominance",
+        "vad_valence",
+        "vader_compound",
+    }
+    df = pd.DataFrame()
+    for name, f in tqdm(zip(feature_names, features)):
+        if name not in feats_to_plot:
+            continue
+        f = f.toarray().squeeze()[subsample_idxs]
+        df[name] = f
+    plot = sbn.pairplot(df, markers="+", corner=True)
+    plot.savefig(join(savedir, "plot.png"))
