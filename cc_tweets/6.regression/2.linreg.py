@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse
 import statsmodels.api as sm
-
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_horizontal_bars
@@ -17,10 +16,11 @@ SEED = 0xDEADBEEF
 FEATURE_FILTER = [
     # "negation",
     # "subj_combined",
+    "vad_present",
     "vad_arousal",
     "vad_dominance",
-    # "vad_valence",
-    "vader_compound",
+    "vad_valence",
+    # "vader_compound",
     "bias",
     "log_followers",
 ]

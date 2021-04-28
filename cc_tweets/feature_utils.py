@@ -4,10 +4,9 @@ from os.path import join
 
 import numpy as np
 import scipy
-from config import DATA_DIR
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import SUBSET_NAME
+from cc_tweets.experiment_config import SUBSET_NAME, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, save_json, save_pkl
 from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 
@@ -27,6 +26,8 @@ def get_log_retweets(tweets):
 
 def get_stats(tweets, name2id2value):
     name2sum = defaultdict(float)
+    name2max = defaultdict(float)
+    name2min = defaultdict(float)
     name2stance2sum = defaultdict(lambda: defaultdict(float))
     id2stance = {t["id"]: t["stance"] for t in tweets}
     stance2count = Counter([t["stance"] for t in tweets])
@@ -34,6 +35,8 @@ def get_stats(tweets, name2id2value):
     for name, id2value in name2id2value.items():
         for id, value in id2value.items():
             name2sum[name] += value
+            name2max[name] = max(name2max[name], value)
+            name2min[name] = min(name2min[name], value)
             stance = id2stance[id]
             if stance in ["rep", "dem"]:
                 name2stance2sum[name][stance] += value
@@ -42,6 +45,8 @@ def get_stats(tweets, name2id2value):
     for name in name2id2value:
         results[name] = {}
         results[name]["sum"] = name2sum[name]
+        results[name]["max"] = name2max[name]
+        results[name]["min"] = name2min[name]
         results[name]["mean"] = name2sum[name] / len(tweets)
         results[name]["partisan"] = {}
         results[name]["partisan"]["dem"] = (
@@ -60,8 +65,8 @@ def save_features(
     tweets,
     name2id2value,
     source_name,
-    save_features_dir=join(DATA_DIR, SUBSET_NAME, "features"),
-    save_feature_stats_dir=join(DATA_DIR, SUBSET_NAME, "feature_stats"),
+    save_features_dir=join(SUBSET_WORKING_DIR, "features"),
+    save_feature_stats_dir=join(SUBSET_WORKING_DIR, "feature_stats"),
 ):
     makedirs(save_features_dir, exist_ok=True)
     for name, id2value in name2id2value.items():
@@ -73,7 +78,7 @@ def save_stats(
     tweets,
     name2id2value,
     source_name,
-    save_feature_stats_dir=join(DATA_DIR, SUBSET_NAME, "feature_stats"),
+    save_feature_stats_dir=join(SUBSET_WORKING_DIR, "feature_stats"),
 ):
     makedirs(save_feature_stats_dir, exist_ok=True)
     stats = get_stats(tweets, name2id2value)
@@ -111,7 +116,7 @@ def visualize_features(
     name2id2value,
     tweets,
     source_name,
-    save_feature_stats_dir=join(DATA_DIR, SUBSET_NAME, "feature_stats"),
+    save_feature_stats_dir=join(SUBSET_WORKING_DIR, "feature_stats"),
 ):
     # individual feat horizontal bar
     name2value = {

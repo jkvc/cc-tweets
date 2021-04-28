@@ -3,15 +3,16 @@ from collections import Counter, defaultdict
 from os.path import join
 
 import matplotlib.pyplot as plt
-from config import DATA_DIR, RESOURCES_DIR
-from nltk.stem import WordNetLemmatizer
-from tqdm import tqdm
-
+import numpy as np
+import pandas as pd
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
-from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
+from cc_tweets.utils import load_pkl, mkdir_overwrite, read_txt_as_str_list, save_json
 from cc_tweets.viz import grouped_bars
+from config import DATA_DIR, RESOURCES_DIR
+from nltk.stem import WordNetLemmatizer
+from tqdm import tqdm
 
 VAD_PATH = join(RESOURCES_DIR, "NRC-VAD-Lexicon-Aug2018Release", "OneFilePerDimension")
 VAD_TO_ABBRV = {
@@ -34,6 +35,19 @@ def load_vad2lemma2score():
     return dict(vad2lemma2score)
 
 
+def vad_top_n_tweets(tweets, name2id2score, vad, max_or_min, n=3000):
+    score0ids = sorted(
+        [(score, id) for id, score in name2id2score[vad].items()],
+        reverse=max_or_min == "max",
+    )
+    score0ids = score0ids[:n]
+    ids = [id for score, id in score0ids[:n]]
+    scores = [score for score, id in score0ids[:n]]
+    id2tweets = {t["id"]: t for t in tweets}
+    tweets = [id2tweets[id] for id in ids]
+    return tweets
+
+
 if __name__ == "__main__":
     tweets = load_pkl(SUBSET_PKL_PATH)
     vad2lemma2score = load_vad2lemma2score()
@@ -42,20 +56,41 @@ if __name__ == "__main__":
     vad2stance2lemma2score = defaultdict(
         lambda: defaultdict(lambda: defaultdict(float))
     )
+    has_vad_ids = set()
     for tweet in tqdm(tweets):
         for vad in VAD_TO_ABBRV:
             name2id2score[vad][tweet["id"]] = 0
             for lemma in tweet["lemmas"]:
                 if lemma in AFFECT_IGNORE_LEMMAS:
                     continue
-                score = vad2lemma2score[vad].get(lemma, 0)
-                name2id2score[vad][tweet["id"]] += score
-                vad2stance2lemma2score[vad][tweet["stance"]][lemma] += score
+
+                if lemma in vad2lemma2score[vad]:
+                    score = vad2lemma2score[vad][lemma]
+                    name2id2score[vad][tweet["id"]] += score
+                    vad2stance2lemma2score[vad][tweet["stance"]][lemma] += score
+                    has_vad_ids.add(tweet["id"])
 
     name2id2score = {f"vad_{k}": v for k, v in name2id2score.items()}
-
+    name2id2score["vad_present"] = {
+        t["id"]: 1 if t["id"] in has_vad_ids else 0 for t in tweets
+    }
     save_features(tweets, name2id2score, "nrc_vad")
 
+    # case study, we want high dominance and low arousal
+    mkdir_overwrite(join(SUBSET_WORKING_DIR, "vad_case"))
+    d = vad_top_n_tweets(tweets, name2id2score, "vad_dominance", "max")
+    a = vad_top_n_tweets(tweets, name2id2score, "vad_arousal", "min")
+    ids = list({t["id"] for t in d} | {t["id"] for t in a})
+    df = pd.DataFrame()
+    df["id"] = ids
+    df["dominance"] = [name2id2score["vad_dominance"][id] for id in ids]
+    df["arousal"] = [name2id2score["vad_arousal"][id] for id in ids]
+    df["d-a"] = df["dominance"] - df["arousal"]
+    id2tweet = {t["id"]: t for t in tweets}
+    df["text"] = [id2tweet[id]["text"] for id in ids]
+    df.to_csv(join(SUBSET_WORKING_DIR, "vad_case", "d-a.csv"), index=False)
+
+    # save top vad words for each stance
     vad2stance2toplemma = {}
     for vad in VAD_TO_ABBRV:
         stance2lemma2score = vad2stance2lemma2score[vad]

@@ -82,6 +82,8 @@ def dedup(all_tweets):
             tid2tweets[tid]["retweeter_userids"].update(t["retweeter_userids"])
         else:
             tid2tweets[tid] = t
+    for tid, t in tid2tweets.items():
+        t["retweeter_userids"] = list(t["retweeter_userids"])
     return tid2tweets
 
 
@@ -93,7 +95,7 @@ def populate_followers_inplace(all_tweets):
 
     for t in all_tweets:
         t["num_follower"] = get_num_follower(t["userid"])
-        all_tweeter_userids = t["retweeter_userids"].union({t["userid"]})
+        all_tweeter_userids = t["retweeter_userids"] + [t["userid"]]
         t["max_num_follower"] = max(
             get_num_follower(userid) for userid in all_tweeter_userids
         )

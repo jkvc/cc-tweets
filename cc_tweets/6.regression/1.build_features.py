@@ -6,9 +6,6 @@ import numpy as np
 import pandas as pd
 import scipy.sparse
 import seaborn as sbn
-from config import DATA_DIR
-from tqdm import tqdm
-
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import (
@@ -18,6 +15,8 @@ from cc_tweets.utils import (
     save_pkl,
     write_str_list_as_txt,
 )
+from config import DATA_DIR
+from tqdm import tqdm
 
 
 def _load_single_feature(tweets, path):
@@ -87,6 +86,7 @@ if __name__ == "__main__":
         "vad_arousal",
         "vad_dominance",
         "vad_valence",
+        "vad_present",
         "vader_compound",
         # "vader_neg",
         # "vader_neu",
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     feature_names.append("bias")
     features.append(scipy.sparse.csr_matrix(np.ones((len(tweets),))))
     feature_names.append("log_followers")
-    features.append(get_log_follower_features(tweets))
+    features.append(get_log_follower_features(tweets, source="max_num_follower"))
 
     # stack and save
     feature_matrix = scipy.sparse.vstack(features).T
