@@ -13,6 +13,12 @@ from cc_tweets.utils import load_pkl, mkdir_overwrite, unzip
 ENGAGEMENTS = ["retweets", "likes"]
 MIN_NUM_FOLLOWER = 30
 
+
+def get_ratio(t, engagement_type):
+    return np.log(t[engagement_type] + 1) / np.log(t["max_num_follower"] + 1)
+    # return (t[engagement_type] + 1) / (t["max_num_follower"] + 1)
+
+
 if __name__ == "__main__":
     savedir = join(SUBSET_WORKING_DIR, "log_odds_engagement")
     makedirs(savedir, exist_ok=True)
@@ -24,7 +30,7 @@ if __name__ == "__main__":
 
         ratios = np.array(
             [
-                np.log(t[engagement_type] + 1) / np.log(t["max_num_follower"] + 1)
+                get_ratio(t, engagement_type)
                 for t in tweets
                 if t["max_num_follower"] >= MIN_NUM_FOLLOWER
             ]
@@ -40,9 +46,10 @@ if __name__ == "__main__":
             for t in tweets:
                 if t["max_num_follower"] < MIN_NUM_FOLLOWER:
                     continue
-                ratio = np.log(t[engagement_type] + 1) / np.log(
-                    t["max_num_follower"] + 1
-                )
+                ratio = get_ratio(t, engagement_type)
+                if "fuck" in t["lemmas"]:
+                    print(t["max_num_follower"], t[engagement_type], ratio, t["text"])
+
                 wc = hi_engagement_wc if ratio > median else lo_engagement_wc
                 wc.update(get_ngrams(t[toktype], ngram))
 

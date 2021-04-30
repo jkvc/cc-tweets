@@ -7,22 +7,61 @@ import numpy as np
 import scipy.sparse
 import statsmodels.api as sm
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.feature_utils import get_log_retweets, get_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_horizontal_bars
 
 SEED = 0xDEADBEEF
 
-# FEATURE_FILTER = None
+FEATURE_FILTER = None
 FEATURE_FILTER = [
-    # "negation",
-    # "subj_combined",
-    "vad_present",
+    "economy",
+    "emolex_anger",
+    "emolex_anticipation",
+    "emolex_disgust",
+    "emolex_fear",
+    "emolex_joy",
+    "emolex_sadness",
+    "emolex_surprise",
+    "emolex_trust",
+    "natural_disasters",
+    "negation",
+    # "p_aoc",
+    # "p_attenborough",
+    # "p_bernie",
+    # "p_biden",
+    # "p_clinton",
+    # "p_gore",
+    # "p_inslee",
+    # "p_nye",
+    # "p_obama",
+    # "p_pruitt",
+    # "p_thunberg",
+    # "p_trump",
+    "subj_combined",
+    # "subj_strong",
+    # "subj_weak",
     "vad_arousal",
     "vad_dominance",
     "vad_valence",
-    # "vader_compound",
+    "vad_present",
+    "vader_compound",
+    # "vader_neg",
+    # "vader_neu",
+    # "vader_pos",
+    "mfd_vice_authority",
+    "mfd_vice_fairness",
+    "mfd_vice_harm",
+    "mfd_vice_loyalty",
+    "mfd_vice_purity",
+    "mfd_virtue_authority",
+    "mfd_virtue_fairness",
+    "mfd_virtue_harm",
+    "mfd_virtue_loyalty",
+    "mfd_virtue_purity",
     "bias",
     "log_followers",
+    # "followers",
 ]
 
 if __name__ == "__main__":
@@ -39,10 +78,13 @@ if __name__ == "__main__":
         filtered_feature_idxs = [fn2idx[fn] for fn in FEATURE_FILTER]
         feature_names = [feature_names[i] for i in filtered_feature_idxs]
         feature_matrix = feature_matrix[:, filtered_feature_idxs]
+    feature_matrix = feature_matrix.toarray()
 
-    log_retweets = scipy.sparse.load_npz(join(regin_dir, f"log_retweets.npz"))
-    log_retweets, feature_matrix = log_retweets.toarray(), feature_matrix.toarray()
-    log_retweets = np.squeeze(log_retweets)
+    # log_retweets = scipy.sparse.load_npz(join(regin_dir, f"log_retweets.npz"))
+    # log_retweets = log_retweets.toarray()
+    # log_retweets = np.squeeze(log_retweets)
+    # targets = log_retweets
+    targets = np.squeeze(get_log_retweets(tweets).toarray())
 
     name0idxs = [("all", None)]
     idxs_dem = load_pkl(join(regin_dir, "idxs_dem.pkl"))
@@ -56,12 +98,12 @@ if __name__ == "__main__":
     for name, idxs in name0idxs:
         if idxs == None:
             filtered_feature_matrix = feature_matrix
-            filtered_log_retweets = log_retweets
+            filtered_targets = targets
         else:
             filtered_feature_matrix = feature_matrix[idxs, :]
-            filtered_log_retweets = log_retweets[idxs]
+            filtered_targets = targets[idxs]
 
-        model = sm.OLS(filtered_log_retweets, filtered_feature_matrix)
+        model = sm.OLS(filtered_targets, filtered_feature_matrix)
         fit = model.fit()
 
         name2coef = {name: coef for name, coef in zip(feature_names, fit.params)}
@@ -80,14 +122,14 @@ if __name__ == "__main__":
 
         if name == "all":
             pred = fit.predict()
-            err = (filtered_log_retweets - pred) ** 2
+            err = (filtered_targets - pred) ** 2
             err0idx = sorted([(err, idx) for idx, err in enumerate(err)], reverse=True)
             most_inacc_idx = [i for _, i in err0idx[:30]]
             most_inacc = [
                 {
                     "idx": i,
                     "pred": pred[i],
-                    "actual": filtered_log_retweets[i],
+                    "actual": filtered_targets[i],
                     "sqerr": err[i],
                     "tweet": tweets[i],
                 }

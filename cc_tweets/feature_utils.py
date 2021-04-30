@@ -11,11 +11,22 @@ from cc_tweets.utils import load_json, save_json, save_pkl
 from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 
 
+def get_follower_features(tweets, source="num_follower"):
+    assert source in ["num_follower", "max_num_follower"]
+    followers = np.array([t[source] for t in tweets])
+    return scipy.sparse.csr_matrix(followers)
+
+
 def get_log_follower_features(tweets, source="num_follower"):
     assert source in ["num_follower", "max_num_follower"]
     followers = np.array([t[source] for t in tweets])
     log_followers = np.log(followers + 1)
     return scipy.sparse.csr_matrix(log_followers)
+
+
+def get_retweets(tweets):
+    retweets = np.array([t["retweets"] for t in tweets])
+    return scipy.sparse.csr_matrix(retweets)
 
 
 def get_log_retweets(tweets):

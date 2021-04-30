@@ -7,7 +7,11 @@ import pandas as pd
 import scipy.sparse
 import seaborn as sbn
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
-from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
+from cc_tweets.feature_utils import (
+    get_follower_features,
+    get_log_follower_features,
+    get_log_retweets,
+)
 from cc_tweets.utils import (
     load_json,
     load_pkl,
@@ -115,6 +119,8 @@ if __name__ == "__main__":
     features.append(scipy.sparse.csr_matrix(np.ones((len(tweets),))))
     feature_names.append("log_followers")
     features.append(get_log_follower_features(tweets, source="max_num_follower"))
+    feature_names.append("followers")
+    features.append(get_follower_features(tweets, source="max_num_follower"))
 
     # stack and save
     feature_matrix = scipy.sparse.vstack(features).T
