@@ -26,46 +26,46 @@ FEATURE_FILTER = [
     # "emolex_trust",
     # "natural_disasters",
     # "negation",
-    # "p_aoc",
-    # "p_attenborough",
-    # "p_bernie",
-    # "p_biden",
-    # "p_clinton",
-    # "p_gore",
-    # "p_inslee",
-    # "p_nye",
-    # "p_obama",
-    # "p_pruitt",
-    # "p_thunberg",
-    # "p_trump",
+    # # "p_aoc",
+    # # "p_attenborough",
+    # # "p_bernie",
+    # # "p_biden",
+    # # "p_clinton",
+    # # "p_gore",
+    # # "p_inslee",
+    # # "p_nye",
+    # # "p_obama",
+    # # "p_pruitt",
+    # # "p_thunberg",
+    # # "p_trump",
     # "subj_combined",
-    # "subj_strong",
-    # "subj_weak",
+    # # "subj_strong",
+    # # "subj_weak",
     "vad_arousal",
     "vad_dominance",
     "vad_valence",
-    "vad_present",
-    "vader_compound",
-    # "vader_neg",
-    # "vader_neu",
-    # "vader_pos",
-    "mfd_vice_authority",
-    "mfd_vice_fairness",
-    "mfd_vice_harm",
-    "mfd_vice_loyalty",
-    "mfd_vice_purity",
-    "mfd_virtue_authority",
-    "mfd_virtue_fairness",
-    "mfd_virtue_harm",
-    "mfd_virtue_loyalty",
-    "mfd_virtue_purity",
+    # "vad_present",
+    # "vader_compound",
+    # # "vader_neg",
+    # # "vader_neu",
+    # # "vader_pos",
+    # "mfd_vice_authority",
+    # "mfd_vice_fairness",
+    # "mfd_vice_harm",
+    # "mfd_vice_loyalty",
+    # "mfd_vice_purity",
+    # "mfd_virtue_authority",
+    # "mfd_virtue_fairness",
+    # "mfd_virtue_harm",
+    # "mfd_virtue_loyalty",
+    # "mfd_virtue_purity",
     "bias",
     "log_followers",
     # "followers",
 ]
 
 if __name__ == "__main__":
-    savedir = join(SUBSET_WORKING_DIR, "linreg")
+    savedir = join(SUBSET_WORKING_DIR, "gammareg")
     makedirs(savedir, exist_ok=True)
 
     tweets = load_pkl(SUBSET_PKL_PATH)
@@ -103,7 +103,10 @@ if __name__ == "__main__":
             filtered_feature_matrix = feature_matrix[idxs, :]
             filtered_targets = targets[idxs]
 
-        model = sm.OLS(filtered_targets, filtered_feature_matrix)
+        # model = sm.OLS(filtered_targets, filtered_feature_matrix)
+        model = sm.GLM(
+            filtered_targets, filtered_feature_matrix, family=sm.families.Gamma()
+        )
         fit = model.fit()
 
         name2coef = {name: coef for name, coef in zip(feature_names, fit.params)}
