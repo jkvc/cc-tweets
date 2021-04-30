@@ -53,15 +53,15 @@ if __name__ == "__main__":
     # add bias and follower features
     feature_names.append("bias")
     features.append(scipy.sparse.csr_matrix(np.ones((len(tweets),))))
-    # feature_names.append("log_followers")
-    # features.append(get_log_follower_features(tweets, source="max_num_follower"))
-    feature_names.append("followers")
-    features.append(get_follower_features(tweets, source="max_num_follower"))
+    feature_names.append("log_followers")
+    features.append(get_log_follower_features(tweets, source="max_num_follower"))
+    # feature_names.append("followers")
+    # features.append(get_follower_features(tweets, source="max_num_follower"))
 
     # stack
     feature_matrix = scipy.sparse.vstack(features).T.toarray()
-    # targets = get_log_retweets(tweets).T.toarray()
-    targets = get_retweets(tweets).T.toarray()
+    targets = get_log_retweets(tweets).T.toarray()
+    # targets = get_retweets(tweets).T.toarray()
     # print(feature_matrix.shape, targets.shape)
 
     print("begin reg")
