@@ -48,6 +48,12 @@ def vad_top_n_tweets(tweets, name2id2score, vad, max_or_min, n=3000):
     return tweets
 
 
+# _VAD_BIN_CUTOFFS = {
+#     "valence": (-2, 2),
+#     "arousal": (-1, 1),
+#     "dominance": (-1, 1),
+# }
+
 if __name__ == "__main__":
     tweets = load_pkl(SUBSET_PKL_PATH)
     vad2lemma2score = load_vad2lemma2score()
@@ -70,6 +76,26 @@ if __name__ == "__main__":
                     vad2stance2lemma2score[vad][tweet["stance"]][lemma] += score
                     has_vad_ids.add(tweet["id"])
 
+    _VAD_BIN_CUTOFFS = {}
+    for vad in VAD_TO_ABBRV:
+        scores = sorted(list(name2id2score[vad].values()))
+        c1 = scores[int(len(scores) / 3)]
+        c2 = scores[int(len(scores) / 3 * 2)]
+        _VAD_BIN_CUTOFFS[vad] = (c1, c2)
+    print(_VAD_BIN_CUTOFFS)
+
+    for tweet in tqdm(tweets):
+        for vad, (c1, c2) in _VAD_BIN_CUTOFFS.items():
+            score = name2id2score[vad][tweet["id"]]
+            if score < c1:
+                name2id2score[f"{vad}_neg"][tweet["id"]] = 1
+            elif score >= c1 and score < c2:
+                name2id2score[f"{vad}_neu"][tweet["id"]] = 1
+            elif score >= c2:
+                name2id2score[f"{vad}_pos"][tweet["id"]] = 1
+            else:
+                raise ValueError()
+
     name2id2score = {f"vad_{k}": v for k, v in name2id2score.items()}
     name2id2score["vad_present"] = {
         t["id"]: 1 if t["id"] in has_vad_ids else 0 for t in tweets
@@ -88,7 +114,19 @@ if __name__ == "__main__":
     df["d-a"] = df["dominance"] - df["arousal"]
     id2tweet = {t["id"]: t for t in tweets}
     df["text"] = [id2tweet[id]["text"] for id in ids]
-    df.to_csv(join(SUBSET_WORKING_DIR, "vad_case", "d-a.csv"), index=False)
+    df.to_csv(join(SUBSET_WORKING_DIR, "vad_case", "d-a.max.csv"), index=False)
+
+    d = vad_top_n_tweets(tweets, name2id2score, "vad_dominance", "min")
+    a = vad_top_n_tweets(tweets, name2id2score, "vad_arousal", "max")
+    ids = list({t["id"] for t in d} | {t["id"] for t in a})
+    df = pd.DataFrame()
+    df["id"] = ids
+    df["dominance"] = [name2id2score["vad_dominance"][id] for id in ids]
+    df["arousal"] = [name2id2score["vad_arousal"][id] for id in ids]
+    df["d-a"] = df["dominance"] - df["arousal"]
+    id2tweet = {t["id"]: t for t in tweets}
+    df["text"] = [id2tweet[id]["text"] for id in ids]
+    df.to_csv(join(SUBSET_WORKING_DIR, "vad_case", "d-a.min.csv"), index=False)
 
     # save top vad words for each stance
     vad2stance2toplemma = {}

@@ -30,6 +30,8 @@ AFFECT_IGNORE_WORDS = set(
         "remove",
         "cloudy",
         "warm",
+        "global",
+        "warming",
         "experiment",
         "confidence",
         "gore",

@@ -92,6 +92,15 @@ if __name__ == "__main__":
         "vad_valence",
         "vad_present",
         "vader_compound",
+        "vad_arousal_neg",
+        "vad_arousal_neu",
+        "vad_arousal_pos",
+        "vad_dominance_neg",
+        "vad_dominance_neu",
+        "vad_dominance_pos",
+        "vad_valence_neg",
+        "vad_valence_neu",
+        "vad_valence_pos",
         # "vader_neg",
         # "vader_neu",
         # "vader_pos",
@@ -105,6 +114,12 @@ if __name__ == "__main__":
         "mfd_virtue_harm",
         "mfd_virtue_loyalty",
         "mfd_virtue_purity",
+        "senti_HAN",
+        "senti_HAP",
+        "senti_LAN",
+        "senti_LAP",
+        "senti_NEU",
+        "senti_RAW",
     ]
     features = load_features(tweets, feature_names)
 

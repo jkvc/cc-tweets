@@ -44,21 +44,39 @@ FEATURE_FILTER = [
     "vad_arousal",
     "vad_dominance",
     "vad_valence",
-    "vad_present",
-    "vader_compound",
+    # "vad_present",
+    # --
+    # "vad_arousal_neg",
+    # "vad_arousal_neu",
+    # "vad_arousal_pos",
+    # "vad_dominance_neg",
+    # "vad_dominance_neu",
+    # "vad_dominance_pos",
+    # "vad_valence_neg",
+    # "vad_valence_neu",
+    # "vad_valence_pos",
+    # --
+    # "vader_compound",
     # "vader_neg",
     # "vader_neu",
     # "vader_pos",
-    "mfd_vice_authority",
-    "mfd_vice_fairness",
-    "mfd_vice_harm",
-    "mfd_vice_loyalty",
-    "mfd_vice_purity",
-    "mfd_virtue_authority",
-    "mfd_virtue_fairness",
-    "mfd_virtue_harm",
-    "mfd_virtue_loyalty",
-    "mfd_virtue_purity",
+    # "mfd_vice_authority",
+    # "mfd_vice_fairness",
+    # "mfd_vice_harm",
+    # "mfd_vice_loyalty",
+    # "mfd_vice_purity",
+    # "mfd_virtue_authority",
+    # "mfd_virtue_fairness",
+    # "mfd_virtue_harm",
+    # "mfd_virtue_loyalty",
+    # "mfd_virtue_purity",
+    # "senti_HAN",
+    # "senti_HAP",
+    # "senti_LAN",
+    # "senti_LAP",
+    # "senti_NEU",
+    # "senti_RAW",
+    # --
     "bias",
     "log_followers",
     # "followers",
@@ -94,6 +112,13 @@ if __name__ == "__main__":
     subsampled_idxs_dem = np.random.choice(idxs_dem, size=len(idxs_rep), replace=False)
     idxs_balanced = idxs_rep + subsampled_idxs_dem.tolist()
     name0idxs.append(("balanced", idxs_balanced))
+
+    science_words = ["science", "research", "scientist", "researcher", "study"]
+    science_idxs = []
+    for i, t in enumerate(tweets):
+        if any(w in t["lemmas"] for w in science_words):
+            science_idxs.append(i)
+    name0idxs.append(("science", science_idxs))
 
     for name, idxs in name0idxs:
         if idxs == None:

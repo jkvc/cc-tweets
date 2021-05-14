@@ -8,9 +8,10 @@ import pandas as pd
 from cc_tweets.data_utils import get_ngrams
 from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.log_odds import scaled_lor
+from cc_tweets.misc import AFFECT_IGNORE_LEMMAS, AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, mkdir_overwrite, unzip
 
-ENGAGEMENTS = ["retweets", "likes"]
+ENGAGEMENT_TYPES = ["retweets", "likes"]
 MIN_NUM_FOLLOWER = 30
 
 
@@ -19,13 +20,13 @@ def get_ratio(t, engagement_type):
     # return (t[engagement_type] + 1) / (t["max_num_follower"] + 1)
 
 
-if __name__ == "__main__":
-    savedir = join(SUBSET_WORKING_DIR, "log_odds_engagement")
+def _experiment(savedir, tweets):
+    # savedir = join(SUBSET_WORKING_DIR, "log_odds_engagement")
     makedirs(savedir, exist_ok=True)
 
-    tweets = load_pkl(SUBSET_PKL_PATH)
+    # tweets = load_pkl(SUBSET_PKL_PATH)
 
-    for engagement_type in ENGAGEMENTS:
+    for engagement_type in ENGAGEMENT_TYPES:
         print(">>", engagement_type)
 
         ratios = np.array(
@@ -43,15 +44,24 @@ if __name__ == "__main__":
 
         for toktype, ngram in [("lemmas", 1), ("stems", 2)]:
             hi_engagement_wc, lo_engagement_wc = Counter(), Counter()
+            hi_ratio0tweet, lo_ratio0tweet = [], []
+
             for t in tweets:
                 if t["max_num_follower"] < MIN_NUM_FOLLOWER:
                     continue
                 ratio = get_ratio(t, engagement_type)
-                if "fuck" in t["lemmas"]:
-                    print(t["max_num_follower"], t[engagement_type], ratio, t["text"])
+
+                if ratio > median:
+                    hi_ratio0tweet.append((ratio, t))
+                else:
+                    lo_ratio0tweet.append((ratio, t))
 
                 wc = hi_engagement_wc if ratio > median else lo_engagement_wc
-                wc.update(get_ngrams(t[toktype], ngram))
+                ignores = (
+                    AFFECT_IGNORE_LEMMAS if toktype == "lemmas" else AFFECT_IGNORE_STEMS
+                )
+                toks = [tok for tok in t[toktype] if tok not in ignores]
+                wc.update(get_ngrams(toks, ngram))
 
             lor0w = scaled_lor(hi_engagement_wc, lo_engagement_wc, {})
             hi_engagement_topwords = [w for lor, w in lor0w][:100]
@@ -66,3 +76,16 @@ if __name__ == "__main__":
             df.to_csv(
                 join(savedir, f"{engagement_type}.{toktype}.{ngram}.csv"), index=False
             )
+
+
+if __name__ == "__main__":
+    tweets = load_pkl(SUBSET_PKL_PATH)
+    _experiment(join(SUBSET_WORKING_DIR, "log_odds_engagement", "all"), tweets)
+    _experiment(
+        join(SUBSET_WORKING_DIR, "log_odds_engagement", "dem"),
+        [t for t in tweets if t["stance"] == "dem"],
+    )
+    _experiment(
+        join(SUBSET_WORKING_DIR, "log_odds_engagement", "rep"),
+        [t for t in tweets if t["stance"] == "rep"],
+    )
