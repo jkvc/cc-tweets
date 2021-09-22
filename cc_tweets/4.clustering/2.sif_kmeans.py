@@ -7,18 +7,17 @@ from random import shuffle
 
 import numpy as np
 import pandas as pd
+from cc_tweets.utils import load_pkl, save_json, save_pkl
+from experiment_configs.base import EMB_DIM, SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from sklearn.cluster import KMeans
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm, trange
 
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR, EMB_DIM
-from cc_tweets.utils import load_pkl, save_json, save_pkl
-
-EMB_PATH = join(SUBSET_WORKING_DIR, "glove", f"glove.{EMB_DIM}.csv")
+EMB_PATH = join(SUBSET_WORKING_DIR, "clustering", f"glove.{EMB_DIM}.csv")
 
 NUM_CLUSTERS = [7, 10, 20]
-SAVE_RESULTS_SUPERDIR = join(SUBSET_WORKING_DIR, "sif")
+SAVE_RESULTS_SUPERDIR = join(SUBSET_WORKING_DIR, "clustering")
 
 MAXLEN = 1000
 PRINT_EVERY = 5000
@@ -176,7 +175,7 @@ def generate_embeddings(docs, all_data, model, words2idx, dim, rmpc=1):
 
 if __name__ == "__main__":
     makedirs(SAVE_RESULTS_SUPERDIR, exist_ok=True)
-    embeddings_save_path = join(SAVE_RESULTS_SUPERDIR, "embeddings.pkl")
+    embeddings_save_path = join(SAVE_RESULTS_SUPERDIR, "sif_embeddings.pkl")
 
     tweets = load_pkl(SUBSET_PKL_PATH)
     if not exists(embeddings_save_path):

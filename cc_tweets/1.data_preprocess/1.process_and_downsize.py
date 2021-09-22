@@ -1,20 +1,16 @@
 import json
+import random
 from collections import Counter, OrderedDict
 from datetime import datetime
 from glob import glob
 from os import makedirs, mkdir
 from os.path import exists, join
+from posixpath import basename, dirname
 from pprint import pprint
 from typing import List
 
 import matplotlib.pyplot as plt
 from cc_tweets.data_utils import parse_raw_tweet
-from cc_tweets.experiment_config import (
-    DOWNSIZE_FACTOR,
-    FILTER_UNK,
-    SUBSET_PKL_PATH,
-    SUBSET_WORKING_DIR,
-)
 from cc_tweets.utils import (
     ParallelHandler,
     load_json,
@@ -24,6 +20,12 @@ from cc_tweets.utils import (
     save_pkl,
 )
 from config import DATA_DIR, RAW_DIR
+from experiment_configs.base import (
+    DATA_SUBSET_SIZE,
+    FILTER_UNK,
+    SUBSET_PKL_PATH,
+    SUBSET_WORKING_DIR,
+)
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
@@ -34,22 +36,30 @@ STOPWORDS = stopwords.words("english")
 
 INVALIDATE_CACHE = False
 
+_all_jsonl_paths = sorted(glob(join(RAW_DIR, "tweets", "*.jsonl")))
+NUM_SAMPLES_TO_KEEP_PER_PROC = DATA_SUBSET_SIZE // len(_all_jsonl_paths) + 1
+
 
 def process_tweets_from_raw(jsonl_path):
-    cache_path = f"{jsonl_path}.{DOWNSIZE_FACTOR}.pkl"
+    # cache_path = f"{jsonl_path}.{DOWNSIZE_FACTOR}.pkl"
+
+    cache_path = join(
+        SUBSET_WORKING_DIR, "tweet_subset_cache", f"{basename(jsonl_path)}.pkl"
+    )
+    makedirs(dirname(cache_path), exist_ok=True)
     if not INVALIDATE_CACHE and exists(cache_path):
         return
 
-    userid2stance_path = join(DATA_DIR, "userid2stance.pkl")
+    userid2stance_path = join(DATA_DIR, "followers_data", "userid2stance.pkl")
     userid2stance = load_pkl(userid2stance_path)
 
     all_tweet_data = []
     with open(jsonl_path) as f:
         lines = f.readlines()
 
-    for i, line in enumerate(tqdm(lines, disable=True)):
-        if i % DOWNSIZE_FACTOR != 0:
-            continue
+    chosen_lines = random.sample(lines, NUM_SAMPLES_TO_KEEP_PER_PROC)
+
+    for line in tqdm(chosen_lines, disable=True):
 
         tweet = json.loads(line)
         tweet_data = parse_raw_tweet(tweet)
@@ -68,7 +78,10 @@ def process_tweets_from_raw(jsonl_path):
 
 
 def merge_tweets_from_processed_raw(jsonl_paths):
-    cache_paths = [f"{jsonl_path}.{DOWNSIZE_FACTOR}.pkl" for jsonl_path in jsonl_paths]
+    cache_paths = [
+        join(SUBSET_WORKING_DIR, "tweet_subset_cache", f"{basename(jsonl_path)}.pkl")
+        for jsonl_path in jsonl_paths
+    ]
     handler = ParallelHandler(load_pkl)
     all_tweets = handler.run(cache_paths, flatten=True)
     return all_tweets
@@ -88,7 +101,9 @@ def dedup(all_tweets):
 
 
 def populate_followers_inplace(all_tweets):
-    userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
+    userid2numfollowers = load_json(
+        join(DATA_DIR, "followers_data", "userid2numfollowers.json")
+    )
 
     def get_num_follower(userid):
         return userid2numfollowers.get(userid, 0)

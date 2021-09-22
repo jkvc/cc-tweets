@@ -25,7 +25,7 @@ def chunks(lst, n):
 
 
 if __name__ == "__main__":
-    userid2stance = load_pkl(join(DATA_DIR, "userid2stance.pkl"))
+    userid2stance = load_pkl(join(DATA_DIR, "followers_data", "userid2stance.pkl"))
     userids = list(userid2stance.keys())
 
     userid_chunks = list(chunks(userids, 100))
@@ -36,4 +36,7 @@ if __name__ == "__main__":
     userid2numfollowers = {
         userid: numfollowers for userid, numfollowers in userid0numfollowers
     }
-    save_json(userid2numfollowers, join(DATA_DIR, "userid2numfollowers.json"))
+    save_json(
+        userid2numfollowers,
+        join(DATA_DIR, "followers_data", "userid2numfollowers.json"),
+    )

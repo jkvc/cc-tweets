@@ -3,22 +3,21 @@ from os.path import exists, join
 
 import matplotlib.pyplot as plt
 import numpy as np
-from config import DATA_DIR
-from nltk.stem.snowball import SnowballStemmer
-
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json
+from config import DATA_DIR
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from nltk.stem.snowball import SnowballStemmer
 
 NUM_CLUSTERS = 10
 SAVE_JSON_PATH = join(
     SUBSET_WORKING_DIR,
-    "sif",
+    "clustering",
     f"{NUM_CLUSTERS}clusters",
     "in_cluster_stances.json",
 )
 SAVE_PNG_PATH = join(
     SUBSET_WORKING_DIR,
-    "sif",
+    "clustering",
     f"{NUM_CLUSTERS}clusters",
     "in_cluster_stances.png",
 )
@@ -27,7 +26,7 @@ if __name__ == "__main__":
     cluster_names = read_txt_as_str_list(
         join(
             SUBSET_WORKING_DIR,
-            "sif",
+            "clustering",
             f"{NUM_CLUSTERS}clusters",
             "cluster_names.txt",
         )
@@ -38,7 +37,7 @@ if __name__ == "__main__":
         assignments = load_pkl(
             join(
                 SUBSET_WORKING_DIR,
-                "sif",
+                "clustering",
                 f"{NUM_CLUSTERS}clusters",
                 "cluster_assignments.pkl",
             )

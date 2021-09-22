@@ -5,9 +5,9 @@ from typing import Dict, List, Tuple
 import numpy as np
 import pandas as pd
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.log_odds import scaled_lor
 from cc_tweets.utils import load_pkl, mkdir_overwrite
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 MIN_UNIQUE_USER = 100  # only keep words used by at least this many users
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     dem_tweets = [t for t in tweets if t["stance"] == "dem"]
     rep_tweets = [t for t in tweets if t["stance"] == "rep"]
 
-    savedir = join(SUBSET_WORKING_DIR, "log_odds")
+    savedir = join(SUBSET_WORKING_DIR, "log_odds_partisan")
     mkdir_overwrite(savedir)
 
     for tok_type, ngrams in [
@@ -67,3 +67,5 @@ if __name__ == "__main__":
         df["dem"] = dem_topwords
         df["rep"] = rep_topwords
         df.to_csv(join(savedir, f"{tok_type}_{ngrams}.csv"))
+
+    print("stuff written to ", savedir)

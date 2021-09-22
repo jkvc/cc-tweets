@@ -5,7 +5,7 @@ from os.path import join
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, mkdir_overwrite, read_txt_as_str_list, save_json

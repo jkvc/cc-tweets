@@ -6,7 +6,7 @@ import numpy as np
 import scipy
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import SUBSET_NAME, SUBSET_WORKING_DIR
+from experiment_configs.base import SUBSET_NAME, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, save_json, save_pkl
 from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 

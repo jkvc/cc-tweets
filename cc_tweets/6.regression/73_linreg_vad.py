@@ -10,7 +10,7 @@ from config import RESOURCES_DIR
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
 

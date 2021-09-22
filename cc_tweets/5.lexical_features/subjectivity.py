@@ -3,7 +3,7 @@ from os.path import join
 from config import RESOURCES_DIR
 from nltk.stem.snowball import SnowballStemmer
 
-from cc_tweets.experiment_config import SUBSET_PKL_PATH
+from experiment_configs.base import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features
 from cc_tweets.misc import AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list

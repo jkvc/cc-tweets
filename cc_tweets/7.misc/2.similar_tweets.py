@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.log_odds import scaled_lor
 from cc_tweets.utils import load_pkl, mkdir_overwrite, unzip
 

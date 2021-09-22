@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from cc_tweets.data_utils import get_ngrams
-from cc_tweets.experiment_config import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.log_odds import scaled_lor
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS, AFFECT_IGNORE_STEMS
 from cc_tweets.utils import load_pkl, mkdir_overwrite, unzip
@@ -66,8 +66,8 @@ def _experiment(savedir, tweets):
             lor0w = scaled_lor(hi_engagement_wc, lo_engagement_wc, {})
             hi_engagement_topwords = [w for lor, w in lor0w][:100]
             lo_engagement_topwords = [w for lor, w in lor0w[::-1]][:100]
-            print(hi_engagement_topwords)
-            print(lo_engagement_topwords)
+            # print(hi_engagement_topwords)
+            # print(lo_engagement_topwords)
 
             scores, words = unzip(lor0w)
             df = pd.DataFrame()
@@ -89,3 +89,5 @@ if __name__ == "__main__":
         join(SUBSET_WORKING_DIR, "log_odds_engagement", "rep"),
         [t for t in tweets if t["stance"] == "rep"],
     )
+
+    print("stuff written to ", join(SUBSET_WORKING_DIR, "log_odds_engagement"))

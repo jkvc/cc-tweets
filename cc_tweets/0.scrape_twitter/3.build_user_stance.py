@@ -1,7 +1,9 @@
 import json
 from collections import Counter
 from glob import glob
+from os import makedirs
 from os.path import exists, join
+from posixpath import dirname
 
 from cc_tweets.utils import ParallelHandler, load_pkl, read_txt_as_str_list, save_pkl
 from config import DATA_DIR, RAW_DIR, RESOURCES_DIR
@@ -68,7 +70,8 @@ def get_user_stance(dem_p2fs, rep_p2fs, userid):
 
 
 if __name__ == "__main__":
-    userid2stance_path = join(DATA_DIR, "userid2stance.pkl")
+    userid2stance_path = join(DATA_DIR, "followers_data", "userid2stance.pkl")
+    makedirs(dirname(userid2stance_path), exist_ok=True)
 
     if not exists(userid2stance_path):
         print("get userids")

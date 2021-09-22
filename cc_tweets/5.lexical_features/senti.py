@@ -2,7 +2,7 @@ import random
 from collections import defaultdict
 from os.path import join
 
-from cc_tweets.experiment_config import SUBSET_PKL_PATH
+from experiment_configs.base import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features
 from cc_tweets.utils import ParallelHandler, load_pkl
 from config import RESOURCES_DIR
