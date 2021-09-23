@@ -2,7 +2,6 @@ import operator
 from collections import Counter
 
 import numpy as np
-from experiment_configs.base import EMB_DIM, SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 
