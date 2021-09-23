@@ -4,7 +4,9 @@ from os.path import join
 from posixpath import dirname
 from typing import Any, Callable, Dict, List, Optional
 
-from cc_tweets.utils import load_pkl, save_pkl
+from cc_tweets.feature_utils import get_single_stat, get_stats
+from cc_tweets.utils import load_pkl, save_json, save_pkl
+from config import WORKING_DIR
 from experiment_configs.base import (
     DATA_SUBSET_SIZE,
     FILTER_UNK,
@@ -35,7 +37,11 @@ class Feature:
         feature_dict = self.extractor(tweets)
         save_pkl(feature_dict, feature_cache_path)
 
-        feature_viz_path = join(SUBSET_WORKING_DIR, "feature_viz", f"{self.name}.pkl")
+        save_stats_path = join(SUBSET_WORKING_DIR, "feature_stats", f"{self.name}.json")
+        makedirs(dirname(save_stats_path), exist_ok=True)
+        stats = get_single_stat(tweets, feature_dict)
+        save_json(stats, save_stats_path)
+
         return feature_dict
 
     def get_feature_dict(self, tweets) -> Dict[str, float]:

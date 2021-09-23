@@ -30,9 +30,9 @@ for i, row in df.iterrows():
     _valencefoundation2lemmas[vf].add(lemma)
 
 
-for vfname, vflemmas in _valencefoundation2lemmas.items():
-
+def closure(vfname):
     def _extract_features(tweets):
+        vflemmas = _valencefoundation2lemmas[vfname]
         id2count = defaultdict(int)
         for tweet in tweets:
             for lemma in tweet["lemmas"]:
@@ -42,4 +42,8 @@ for vfname, vflemmas in _valencefoundation2lemmas.items():
                     id2count[tweet["id"]] += 1
         return id2count
 
-    register_feature(Feature(f"mfd.{vfname}", _extract_features))
+    return _extract_features
+
+
+for vfname in _valencefoundation2lemmas:
+    register_feature(Feature(f"mfd.{vfname}", closure(vfname)))

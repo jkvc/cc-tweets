@@ -49,8 +49,7 @@ def vad_top_n_tweets(tweets, name2id2score, vad, max_or_min, n=3000):
     return tweets
 
 
-for v in VAD_TO_ABBRV:
-
+def closure(v):
     def _extract(tweets):
         vad2lemma2score = load_vad2lemma2score()
         id2score = defaultdict(float)
@@ -61,7 +60,11 @@ for v in VAD_TO_ABBRV:
                 id2score[tweet["id"]] += vad2lemma2score[v].get(lemma, 0)
         return id2score
 
-    register_feature(Feature(f"vad.{v}", _extract))
+    return _extract
+
+
+for v in VAD_TO_ABBRV:
+    register_feature(Feature(f"vad.{v}", closure(v)))
 
 
 # _VAD_BIN_CUTOFFS = {

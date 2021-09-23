@@ -4,9 +4,9 @@ from os.path import join
 
 import numpy as np
 import scipy
+from experiment_configs.base import SUBSET_NAME, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
-from experiment_configs.base import SUBSET_NAME, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, save_json, save_pkl
 from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 
@@ -70,6 +70,10 @@ def get_stats(tweets, name2id2value):
             results[name]["partisan"]["dem"] + results[name]["partisan"]["rep"]
         ) / 2
     return results
+
+
+def get_single_stat(tweets, id2value):
+    return get_stats(tweets, {"a": id2value})["a"]
 
 
 def save_features(

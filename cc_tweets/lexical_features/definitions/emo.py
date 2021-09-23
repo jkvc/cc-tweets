@@ -38,19 +38,22 @@ def load_emolex_emo2lemma2score():
     return dict(emo2lemma2score)
 
 
-for emo in EMOLEX_EMOS:
-
+def extractor_closure(emo):
     def _extract(tweets):
+
         emo2lemma2score = load_emolex_emo2lemma2score()
         id2score = defaultdict(float)
 
         for tweet in tweets:
-            for emo in EMOLEX_EMOS:
-                for lemma in tweet["lemmas"]:
-                    if lemma in AFFECT_IGNORE_LEMMAS:
-                        continue
-                    score = emo2lemma2score[emo].get(lemma, 0)
-                    id2score[tweet["id"]] += score
+            for lemma in tweet["lemmas"]:
+                if lemma in AFFECT_IGNORE_LEMMAS:
+                    continue
+                score = emo2lemma2score[emo].get(lemma, 0)
+                id2score[tweet["id"]] += score
         return id2score
 
-    register_feature(Feature(f"emo.{emo}", _extract))
+    return _extract
+
+
+for emo in EMOLEX_EMOS:
+    register_feature(Feature(f"emo.{emo}", extractor_closure(emo)))
