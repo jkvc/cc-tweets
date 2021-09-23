@@ -4,17 +4,19 @@ from pprint import pprint
 
 import matplotlib.pyplot as plt
 import numpy as np
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
 from config import DATA_DIR
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 
-SAVE_DIR = join(SUBSET_WORKING_DIR, "engagement")
+SAVE_DIR = join(SUBSET_WORKING_DIR, "engagement_stats")
 
 if __name__ == "__main__":
     makedirs(SAVE_DIR, exist_ok=True)
 
     tweets = load_pkl(SUBSET_PKL_PATH)
-    userid2numfollowers = load_json(join(DATA_DIR, "userid2numfollowers.json"))
+    userid2numfollowers = load_json(
+        join(DATA_DIR, "followers_data", "userid2numfollowers.json")
+    )
     mean_num_followers = sum(userid2numfollowers.values()) / len(userid2numfollowers)
 
     def _get_num_followers(userid):
@@ -134,3 +136,5 @@ if __name__ == "__main__":
     axes[1].hist(log_followers)
     axes[1].set_title("log (follower + 1)")
     plt.savefig(join(SAVE_DIR, "followers_hist.png"))
+
+    print(SAVE_DIR)

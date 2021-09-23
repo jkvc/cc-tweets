@@ -6,24 +6,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse
 import statsmodels.api as sm
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_retweets, get_retweets
 from cc_tweets.utils import load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_horizontal_bars
+from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 
 SEED = 0xDEADBEEF
 
 FEATURE_FILTER = None
 FEATURE_FILTER = [
-    # "economy",
-    # "emolex_anger",
-    # "emolex_anticipation",
-    # "emolex_disgust",
-    # "emolex_fear",
-    # "emolex_joy",
-    # "emolex_sadness",
-    # "emolex_surprise",
-    # "emolex_trust",
+    "economy",
+    "emolex_anger",
+    "emolex_anticipation",
+    "emolex_disgust",
+    "emolex_fear",
+    "emolex_joy",
+    "emolex_sadness",
+    "emolex_surprise",
+    "emolex_trust",
     # "natural_disasters",
     # "negation",
     # "p_aoc",
@@ -57,9 +57,9 @@ FEATURE_FILTER = [
     # "vad_valence_pos",
     # --
     # "vader_compound",
-    # "vader_neg",
-    # "vader_neu",
-    # "vader_pos",
+    "vader_neg",
+    "vader_neu",
+    "vader_pos",
     # "mfd_vice_authority",
     # "mfd_vice_fairness",
     # "mfd_vice_harm",

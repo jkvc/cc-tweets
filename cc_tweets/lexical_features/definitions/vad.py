@@ -22,6 +22,27 @@ VAD_TO_ABBRV = {
     "dominance": "d",
 }
 
+# todo vad bins
+# _VAD_BIN_CUTOFFS = {}
+# for vad in VAD_TO_ABBRV:
+#     scores = sorted(list(name2id2score[vad].values()))
+#     c1 = scores[int(len(scores) / 3)]
+#     c2 = scores[int(len(scores) / 3 * 2)]
+#     _VAD_BIN_CUTOFFS[vad] = (c1, c2)
+# print(_VAD_BIN_CUTOFFS)
+
+# for tweet in tqdm(tweets):
+#     for vad, (c1, c2) in _VAD_BIN_CUTOFFS.items():
+#         score = name2id2score[vad][tweet["id"]]
+#         if score < c1:
+#             name2id2score[f"{vad}_neg"][tweet["id"]] = 1
+#         elif score >= c1 and score < c2:
+#             name2id2score[f"{vad}_neu"][tweet["id"]] = 1
+#         elif score >= c2:
+#             name2id2score[f"{vad}_pos"][tweet["id"]] = 1
+#         else:
+#             raise ValueError()
+
 
 def load_vad2lemma2score():
     lemmatizer = WordNetLemmatizer()

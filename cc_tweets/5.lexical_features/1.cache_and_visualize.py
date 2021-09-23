@@ -8,7 +8,12 @@ from cc_tweets.viz import plot_grouped_bars, plot_horizontal_bars
 from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 
 VISUALIZATION_GROUPING = {
-    "wordcounts": ["disaster", "economy", "negation"],
+    "terms": [
+        "disaster",
+        "economy",
+        "negation",
+        "science",
+    ],
     "emo": [
         "emo.anger",
         "emo.anticipation",
@@ -49,6 +54,7 @@ VISUALIZATION_GROUPING = {
         "vad.valence",
     ],
     "vader": [
+        "vder.compound",
         "vder.neg",
         "vder.neu",
         "vder.pos",
@@ -70,13 +76,6 @@ if __name__ == "__main__":
             s = load_json(join(SUBSET_WORKING_DIR, "feature_stats", f"{name}.json"))
             name2stats[name] = s
 
-        # name2series = {}
-        # for name in featnames:
-        #     stats = load_json(join(SUBSET_WORKING_DIR, "feature_stats", f"{name}.json"))
-        #     name2series[name] = {
-        #         lean: stats["partisan"][lean] for lean in ["dem", "rep"]
-        #     }
-        # print(name2series)
         save_path = join(SUBSET_WORKING_DIR, "feature_viz", f"{groupname}.png")
         makedirs(dirname(save_path), exist_ok=True)
 
