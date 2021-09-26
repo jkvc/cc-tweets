@@ -6,7 +6,7 @@ from cc_tweets.lexical_features.bank import Feature, register_feature
 from cc_tweets.misc import AFFECT_IGNORE_LEMMAS
 from cc_tweets.utils import load_pkl, read_txt_as_str_list
 from config import RESOURCES_DIR
-from experiment_configs.base import SUBSET_PKL_PATH
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from nltk.stem import WordNetLemmatizer
 from tqdm import tqdm
 

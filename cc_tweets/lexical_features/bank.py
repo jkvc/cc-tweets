@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Optional
 from cc_tweets.feature_utils import get_single_stat, get_stats
 from cc_tweets.utils import load_pkl, save_json, save_pkl
 from config import WORKING_DIR
-from experiment_configs.base import (
+from cc_tweets.experiment_configs import (
     DATA_SUBSET_SIZE,
     FILTER_UNK,
     SUBSET_PKL_PATH,

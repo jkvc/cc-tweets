@@ -9,7 +9,7 @@ from cc_tweets.data_utils import get_ngrams
 from cc_tweets.feature_utils import save_features
 from cc_tweets.utils import load_pkl, mkdir_overwrite, write_str_list_as_txt
 from config import DATA_DIR
-from experiment_configs.base import DOWNSIZE_FACTOR, SUBSET_NAME, SUBSET_PKL_PATH
+from cc_tweets.experiment_configs import DOWNSIZE_FACTOR, SUBSET_NAME, SUBSET_PKL_PATH
 from nltk.collocations import BigramCollocationFinder
 from tqdm import tqdm
 

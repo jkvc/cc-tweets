@@ -1,33 +1,20 @@
+# USAGE python3 script_name config_name
+# for config name see ../regression_configs.py
+
 import sys
-from os import makedirs, replace
+from os import makedirs
 from os.path import exists, join
 from posixpath import dirname
-from pprint import pprint
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import scipy.sparse
-import seaborn as sbn
 import statsmodels.api as sm
-from cc_tweets.feature_utils import (
-    get_follower_features,
-    get_log_follower_features,
-    get_log_retweets,
-    get_retweets,
-)
-from cc_tweets.regression_configs import REGRESSION_CONFIGS, get_regression_config
-from cc_tweets.utils import (
-    load_json,
-    load_pkl,
-    read_txt_as_str_list,
-    save_json,
-    save_pkl,
-    write_str_list_as_txt,
-)
+from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
+from cc_tweets.regression_configs import get_regression_config
+from cc_tweets.utils import load_pkl, save_json, save_pkl
 from cc_tweets.viz import plot_horizontal_bars
 from config import DATA_DIR
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 SEED = 0xDEADBEEF

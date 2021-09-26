@@ -7,7 +7,7 @@ from cc_tweets.polarization.textual import calc_dem_rep_polarization
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json
 from cc_tweets.viz import plot_horizontal_bars
 from config import DATA_DIR
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from nltk.stem.snowball import SnowballStemmer
 
 NUM_TRIALS = 10

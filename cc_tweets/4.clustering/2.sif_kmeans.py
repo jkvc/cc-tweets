@@ -7,8 +7,8 @@ from random import shuffle
 
 import numpy as np
 import pandas as pd
+from cc_tweets.experiment_configs import EMB_DIM, SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_pkl, save_json, save_pkl
-from experiment_configs.base import EMB_DIM, SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from sklearn.cluster import KMeans
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer

@@ -3,7 +3,7 @@ from os.path import join
 from pprint import pprint
 
 from cc_tweets.data_utils import get_tweet_time
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.polarization.textual import calc_dem_rep_polarization
 from cc_tweets.utils import load_pkl, mkdir_overwrite, read_txt_as_str_list, save_json
 

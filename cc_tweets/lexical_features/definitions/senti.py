@@ -6,7 +6,7 @@ from cc_tweets.feature_utils import save_features
 from cc_tweets.lexical_features.bank import Feature, register_feature
 from cc_tweets.utils import ParallelHandler, load_pkl
 from config import RESOURCES_DIR
-from experiment_configs.base import SUBSET_PKL_PATH
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from sentistrength import PySentiStr
 from tqdm import tqdm
 

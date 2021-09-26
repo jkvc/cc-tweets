@@ -8,7 +8,7 @@ from os.path import join
 from cc_tweets.data_utils import get_ngrams
 from cc_tweets.utils import load_pkl, write_str_list_as_txt
 from config import DATA_DIR
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 TOP_NS = [10000, 4000, 1000, 300]

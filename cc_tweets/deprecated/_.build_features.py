@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import scipy.sparse
 import seaborn as sbn
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import (
     get_follower_features,
     get_log_follower_features,

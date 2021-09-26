@@ -5,15 +5,15 @@ from typing import Dict, List, Tuple
 import numpy as np
 import pandas as pd
 from cc_tweets.data_utils import get_ngrams
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.log_odds import scaled_lor
 from cc_tweets.utils import load_pkl, mkdir_overwrite
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 MIN_UNIQUE_USER = 100  # only keep words used by at least this many users
 
 
-def get_topn_lors(dem_tweets, rep_tweets, tok_type, ngrams, top_n=50):
+def get_topn_lors(dem_tweets, rep_tweets, tok_type, ngrams, top_n=200):
     dem_tok2count = defaultdict(int)
     rep_tok2count = defaultdict(int)
     tok2users = defaultdict(set)

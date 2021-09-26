@@ -2,7 +2,9 @@ from os.path import join
 
 from config import WORKING_DIR
 
-DATA_SUBSET_SIZE = 20000
+DATA_SUBSET_SIZE = 1000000
+# DATA_SUBSET_SIZE = 25159799  # all retrived tweets
+
 FILTER_UNK = True
 
 SUBSET_NAME = f"subset.{DATA_SUBSET_SIZE}.{'filtered' if FILTER_UNK else 'unfiltered'}"

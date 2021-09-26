@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
 from config import DATA_DIR
-from experiment_configs.base import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 
 SAVE_DIR = join(SUBSET_WORKING_DIR, "engagement_stats")
 

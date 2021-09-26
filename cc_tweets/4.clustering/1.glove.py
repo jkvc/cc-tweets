@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from cc_tweets.clustering.glove import build_coocc_matrix_from_tweets_fixed_vocab
 from cc_tweets.data_utils import load_vocab2idx
-from experiment_configs.base import EMB_DIM, SUBSET_PKL_PATH, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import EMB_DIM, SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_pkl
 from mittens import GloVe
 

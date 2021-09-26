@@ -20,7 +20,7 @@ from cc_tweets.utils import (
     save_pkl,
 )
 from config import DATA_DIR, RAW_DIR
-from experiment_configs.base import (
+from cc_tweets.experiment_configs import (
     DATA_SUBSET_SIZE,
     FILTER_UNK,
     SUBSET_PKL_PATH,

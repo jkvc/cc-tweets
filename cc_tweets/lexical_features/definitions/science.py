@@ -4,7 +4,7 @@ from typing import DefaultDict
 from cc_tweets.feature_utils import save_features, visualize_features
 from cc_tweets.lexical_features.bank import Feature, register_feature
 from cc_tweets.utils import load_pkl
-from experiment_configs.base import SUBSET_PKL_PATH
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from nltk.stem.snowball import SnowballStemmer
 
 TERMS = set(

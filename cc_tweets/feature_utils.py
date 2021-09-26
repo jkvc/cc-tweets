@@ -4,7 +4,7 @@ from os.path import join
 
 import numpy as np
 import scipy
-from experiment_configs.base import SUBSET_NAME, SUBSET_WORKING_DIR
+from cc_tweets.experiment_configs import SUBSET_NAME, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 from cc_tweets.utils import load_json, save_json, save_pkl
