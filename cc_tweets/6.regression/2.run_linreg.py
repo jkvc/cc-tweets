@@ -9,12 +9,12 @@ from posixpath import dirname
 import numpy as np
 import scipy.sparse
 import statsmodels.api as sm
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
 from cc_tweets.regression_configs import get_regression_config
 from cc_tweets.utils import load_pkl, save_json, save_pkl
 from cc_tweets.viz import plot_horizontal_bars
 from config import DATA_DIR
-from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from tqdm import tqdm
 
 SEED = 0xDEADBEEF
@@ -134,10 +134,10 @@ if __name__ == "__main__":
         plot_horizontal_bars(
             name2coef,
             save_path=join(savedir, f"coef_{filter_name}.png"),
-            title=f"coefs: lin reg on log retweets: {filter_name}",
+            title=f"Linear regression coefficients {filter_name}: config [{CONFIG_NAME}]",
             xlim=(-0.2, 0.2),
             yerr=fit.bse * 2,
-            figsize=(7, 8),
+            figsize=(8, 0.2 * feature_matrix.shape[1] + 1),
         )
         save_json(
             {"coef": name2coef, "std": name2std},
