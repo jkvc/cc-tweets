@@ -4,9 +4,10 @@ from pprint import pprint
 
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.utils import load_json, load_pkl, read_txt_as_str_list, save_json, unzip
 from config import DATA_DIR
-from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 
 SAVE_DIR = join(SUBSET_WORKING_DIR, "engagement_stats")
 
@@ -131,10 +132,14 @@ if __name__ == "__main__":
 
     plt.clf()
     fig, axes = plt.subplots(ncols=2, figsize=(10, 7))
-    axes[0].hist(followers)
-    axes[0].set_title("followers")
-    axes[1].hist(log_followers)
-    axes[1].set_title("log (follower + 1)")
+    # axes[0].hist(followers)
+    ax = sns.histplot(data={"x": followers}, x="x", ax=axes[0], bins=20)
+    ax.set_xlabel("number of followers")
+    # axes[0].set_title("followers")
+    # axes[1].hist(log_followers)
+    ax = sns.histplot(data={"x": log_followers}, x="x", ax=axes[1], bins=20)
+    ax.set_xlabel("log number of followers")
+    # axes[1].set_title("log (follower + 1)")
     plt.savefig(join(SAVE_DIR, "followers_hist.png"))
 
     print(SAVE_DIR)

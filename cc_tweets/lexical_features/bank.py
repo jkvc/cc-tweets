@@ -4,15 +4,15 @@ from os.path import join
 from posixpath import dirname
 from typing import Any, Callable, Dict, List, Optional
 
-from cc_tweets.feature_utils import get_single_stat, get_stats
-from cc_tweets.utils import load_pkl, save_json, save_pkl
-from config import WORKING_DIR
 from cc_tweets.experiment_configs import (
     DATA_SUBSET_SIZE,
     FILTER_UNK,
     SUBSET_PKL_PATH,
     SUBSET_WORKING_DIR,
 )
+from cc_tweets.feature_utils import get_single_stat, get_stats
+from cc_tweets.utils import load_pkl, save_json, save_pkl
+from config import WORKING_DIR
 from genericpath import exists
 
 
@@ -53,7 +53,6 @@ _FEATURES: Dict[str, Feature] = {}
 
 def register_feature(feature: Feature):
     name = feature.name
-    assert name not in _FEATURES
     _FEATURES[name] = feature
 
 

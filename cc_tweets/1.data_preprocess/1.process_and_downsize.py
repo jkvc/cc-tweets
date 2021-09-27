@@ -10,7 +10,15 @@ from pprint import pprint
 from typing import List
 
 import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
 from cc_tweets.data_utils import parse_raw_tweet
+from cc_tweets.experiment_configs import (
+    DATA_SUBSET_SIZE,
+    FILTER_UNK,
+    SUBSET_PKL_PATH,
+    SUBSET_WORKING_DIR,
+)
 from cc_tweets.utils import (
     ParallelHandler,
     load_json,
@@ -20,12 +28,6 @@ from cc_tweets.utils import (
     save_pkl,
 )
 from config import DATA_DIR, RAW_DIR
-from cc_tweets.experiment_configs import (
-    DATA_SUBSET_SIZE,
-    FILTER_UNK,
-    SUBSET_PKL_PATH,
-    SUBSET_WORKING_DIR,
-)
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
@@ -57,7 +59,7 @@ def process_tweets_from_raw(jsonl_path):
     with open(jsonl_path) as f:
         lines = f.readlines()
 
-    chosen_lines = random.sample(lines, NUM_SAMPLES_TO_KEEP_PER_PROC)
+    chosen_lines = random.sample(lines, min(len(lines), NUM_SAMPLES_TO_KEEP_PER_PROC))
 
     for line in tqdm(chosen_lines, disable=True):
 
@@ -137,7 +139,15 @@ def _save_stats(tweets):
 
     # count stances
     stances = dict(Counter(t["stance"] for t in tweets))
-    plt.bar(stances.keys(), stances.values())
+    ax = sns.barplot(
+        x="y",
+        y="x",
+        data={
+            "x": list(stances.keys()),
+            "y": list(stances.values()),
+        },
+    )
+    ax.set(xlabel="number of tweeter", ylabel="lean")
     plt.savefig(join(stats_dir, "stances_count.png"))
     plt.clf()
 
@@ -148,7 +158,15 @@ def _save_stats(tweets):
     agg_year = dict(Counter(yyyymms))
     agg_year = OrderedDict(sorted(agg_year.items()))
     pprint(agg_year)
-    plt.bar(agg_year.keys(), agg_year.values())
+    ax = sns.barplot(
+        x="y",
+        y="x",
+        data={
+            "x": list(agg_year.keys()),
+            "y": np.array(list(agg_year.values())) * 4,
+        },
+    )
+    ax.set(xlabel="number of tweet", ylabel="year")
     plt.savefig(join(stats_dir, "agg_year.png"))
     plt.clf()
 

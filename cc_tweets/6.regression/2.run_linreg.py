@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     feature_matrix, target = get_linreg_inputs(CONFIG_NAME, config)
 
-    savedir = join(SUBSET_WORKING_DIR, "linreg_out")
+    savedir = join(SUBSET_WORKING_DIR, "linreg_out", CONFIG_NAME)
     makedirs(savedir, exist_ok=True)
 
     feature_matrix = feature_matrix.toarray()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
         plot_horizontal_bars(
             name2coef,
             save_path=join(savedir, f"coef_{filter_name}.png"),
-            title=f"Linear regression coefficients {filter_name}: config [{CONFIG_NAME}]",
+            title=f"LinReg coefficients | config [{CONFIG_NAME}] | filter [{filter_name}]",
             xlim=(-0.2, 0.2),
             yerr=fit.bse * 2,
             figsize=(8, 0.2 * feature_matrix.shape[1] + 1),

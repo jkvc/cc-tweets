@@ -2,8 +2,9 @@ from os.path import join
 
 from config import WORKING_DIR
 
-DATA_SUBSET_SIZE = 1000000
-# DATA_SUBSET_SIZE = 25159799  # all retrived tweets
+# DATA_SUBSET_SIZE = 20000
+DATA_SUBSET_SIZE = 200000
+# DATA_SUBSET_SIZE = 6000000
 
 FILTER_UNK = True
 

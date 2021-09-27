@@ -31,14 +31,14 @@ BAR_PLOTS_GROUPS = {
     ],
     "mfd": [
         "mfd.vice_authority",
-        "mfd.vice_fairness",
-        "mfd.vice_harm",
-        "mfd.vice_loyalty",
-        "mfd.vice_purity",
         "mfd.virtue_authority",
+        "mfd.vice_fairness",
         "mfd.virtue_fairness",
+        "mfd.vice_harm",
         "mfd.virtue_harm",
+        "mfd.vice_loyalty",
         "mfd.virtue_loyalty",
+        "mfd.vice_purity",
         "mfd.virtue_purity",
     ],
     "senti": [
