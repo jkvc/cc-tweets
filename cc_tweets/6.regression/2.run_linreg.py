@@ -1,6 +1,7 @@
 # USAGE python3 script_name config_name
 # for config name see ../regression_configs.py
 
+import fnmatch
 import sys
 from os import makedirs
 from os.path import exists, join
@@ -11,6 +12,7 @@ import scipy.sparse
 import statsmodels.api as sm
 from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import get_log_follower_features, get_log_retweets
+from cc_tweets.lexical_features.bank import get_all_feature_names
 from cc_tweets.regression_configs import get_regression_config
 from cc_tweets.utils import load_pkl, save_json, save_pkl
 from cc_tweets.viz import plot_horizontal_bars
@@ -33,13 +35,18 @@ def _load_single_feature(tweets, path):
 
 def load_features(tweets, feature_names):
     features = []
+    actual_feature_names = []
+    all_feature_names = get_all_feature_names()
     for name in tqdm(feature_names):
-        features.append(
-            _load_single_feature(
-                tweets, join(SUBSET_WORKING_DIR, "feature_cache", f"{name}.pkl")
+        filtered = fnmatch.filter(all_feature_names, name)
+        for n in filtered:
+            features.append(
+                _load_single_feature(
+                    tweets, join(SUBSET_WORKING_DIR, "feature_cache", f"{n}.pkl")
+                )
             )
-        )
-    return features
+            actual_feature_names.append(n)
+    return features, actual_feature_names
 
 
 def get_linreg_inputs(config_name, config):
@@ -58,7 +65,7 @@ def get_linreg_inputs(config_name, config):
     else:
         if tweets is None:
             tweets = load_pkl(SUBSET_PKL_PATH)
-        features = load_features(tweets, config["features"])
+        features, feature_names = load_features(tweets, config["features"])
 
         if config["const_bias"]:
             features.append(scipy.sparse.csr_matrix(np.ones((len(tweets),))))
@@ -98,14 +105,14 @@ def get_linreg_inputs(config_name, config):
     if tweets is not None:
         del tweets
 
-    return feature_matrix, target
+    return feature_matrix, feature_names, target
 
 
 if __name__ == "__main__":
     print(CONFIG_NAME)
     config = get_regression_config(CONFIG_NAME)
 
-    feature_matrix, target = get_linreg_inputs(CONFIG_NAME, config)
+    feature_matrix, feature_names, target = get_linreg_inputs(CONFIG_NAME, config)
 
     savedir = join(SUBSET_WORKING_DIR, "linreg_out", CONFIG_NAME)
     makedirs(savedir, exist_ok=True)
@@ -123,21 +130,21 @@ if __name__ == "__main__":
         model = sm.OLS(filtered_targets, filtered_feature_matrix)
         fit = model.fit()
 
-        input_names = config["features"]
+        input_names = feature_names
         if config["const_bias"]:
-            input_names.append("const_bias")
+            input_names.append("bias.const")
         if config["log_follower_bias"]:
-            input_names.append("log_follower_bias")
+            input_names.append("bias.log_follower")
 
         name2coef = {name: coef for name, coef in zip(input_names, fit.params)}
         name2std = {name: std for name, std in zip(input_names, fit.bse)}
         plot_horizontal_bars(
             name2coef,
             save_path=join(savedir, f"coef_{filter_name}.png"),
-            title=f"LinReg coefficients | config [{CONFIG_NAME}] | filter [{filter_name}]",
+            # title=f"LinReg coefficients feature_set={CONFIG_NAME} filter={filter_name}",
             xlim=(-0.2, 0.2),
             yerr=fit.bse * 2,
-            figsize=(8, 0.2 * feature_matrix.shape[1] + 1),
+            figsize=(9, 0.2 * feature_matrix.shape[1] + 1.5),
         )
         save_json(
             {"coef": name2coef, "std": name2std},

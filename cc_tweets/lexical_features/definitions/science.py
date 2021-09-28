@@ -1,10 +1,10 @@
 from collections import defaultdict
 from typing import DefaultDict
 
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features, visualize_features
 from cc_tweets.lexical_features.bank import Feature, register_feature
 from cc_tweets.utils import load_pkl
-from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from nltk.stem.snowball import SnowballStemmer
 
 TERMS = set(
@@ -31,4 +31,4 @@ def _extract_features(tweets):
     return id2count
 
 
-register_feature(Feature("science", _extract_features))
+register_feature(Feature("term.science", _extract_features))

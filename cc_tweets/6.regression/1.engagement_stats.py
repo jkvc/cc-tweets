@@ -53,14 +53,14 @@ if __name__ == "__main__":
     follower0rts = [(t["max_num_follower"], t["retweets"]) for t in tweets]
     followers, rts = unzip(follower0rts)
     followers, rts = np.array(followers), np.array(rts)
-    axes[0][0].scatter(followers, rts, marker=".")
+    axes[0][0].scatter(followers, rts, marker=".", s=1)
     axes[0][0].set_title("retweets v max_followers")
     axes[0][0].set_xlabel("max_followers")
     axes[0][0].set_ylabel("rts")
     c1, c0 = np.polyfit(followers, rts, 1)
     linreg_fn = np.poly1d([c1, c0])
     linespace = np.linspace(followers.min(), followers.max(), 20)
-    axes[0][0].plot(linespace, linreg_fn(linespace), color="red")
+    axes[0][0].plot(linespace, linreg_fn(linespace), color="#8C1515")
     preds = linreg_fn(followers)
     stats["rt"] = {
         "c0": c0,
@@ -72,14 +72,14 @@ if __name__ == "__main__":
     # log n_retweet v follower
     log_followers = np.log(np.array(followers) + 1)
     log_rts = np.log(np.array(rts) + 1)
-    axes[0][1].scatter(log_followers, log_rts, marker=".")
+    axes[0][1].scatter(log_followers, log_rts, marker=".", s=1)
     axes[0][1].set_title("log retweets v log max_followers")
     axes[0][1].set_xlabel("log max_followers")
     axes[0][1].set_ylabel("log rts")
     c1, c0 = np.polyfit(log_followers, log_rts, 1)
     linreg_fn = np.poly1d([c1, c0])
     linespace = np.linspace(log_followers.min(), log_followers.max(), 20)
-    axes[0][1].plot(linespace, linreg_fn(linespace), color="red")
+    axes[0][1].plot(linespace, linreg_fn(linespace), color="#8C1515")
     preds = linreg_fn(log_followers)
     stats["log_rt"] = {
         "c0": c0,
@@ -92,14 +92,14 @@ if __name__ == "__main__":
     follower0rts = [(t["num_follower"], t["retweets"]) for t in tweets]
     followers, rts = unzip(follower0rts)
     followers, rts = np.array(followers), np.array(rts)
-    axes[1][0].scatter(followers, rts, marker=".")
+    axes[1][0].scatter(followers, rts, marker=".", s=1)
     axes[1][0].set_title("retweets v followers")
     axes[1][0].set_xlabel("followers")
     axes[1][0].set_ylabel("rts")
     c1, c0 = np.polyfit(followers, rts, 1)
     linreg_fn = np.poly1d([c1, c0])
     linespace = np.linspace(followers.min(), followers.max(), 20)
-    axes[1][0].plot(linespace, linreg_fn(linespace), color="red")
+    axes[1][0].plot(linespace, linreg_fn(linespace), color="#8C1515")
     preds = linreg_fn(followers)
     stats["rt"] = {
         "c0": c0,
@@ -111,14 +111,14 @@ if __name__ == "__main__":
     # log n_retweet v follower
     log_followers = np.log(np.array(followers) + 1)
     log_rts = np.log(np.array(rts) + 1)
-    axes[1][1].scatter(log_followers, log_rts, marker=".")
+    axes[1][1].scatter(log_followers, log_rts, marker=".", s=1)
     axes[1][1].set_title("log retweets v log followers")
     axes[1][1].set_xlabel("log followers")
     axes[1][1].set_ylabel("log rts")
     c1, c0 = np.polyfit(log_followers, log_rts, 1)
     linreg_fn = np.poly1d([c1, c0])
     linespace = np.linspace(log_followers.min(), log_followers.max(), 20)
-    axes[1][1].plot(linespace, linreg_fn(linespace), color="red")
+    axes[1][1].plot(linespace, linreg_fn(linespace), color="#8C1515")
     preds = linreg_fn(log_followers)
     stats["log_rt"] = {
         "c0": c0,

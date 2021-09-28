@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 
 def grouped_bars(fig, ax, x_labels, name2series, width=0.35):
@@ -38,21 +39,35 @@ def plot_grouped_bars(x_labels, name2series, title, save_path):
 
 
 def plot_horizontal_bars(
-    name2val, save_path, title, xlim=None, yerr=None, figsize=(7, 7)
+    name2val, save_path, title=None, xlim=None, yerr=None, figsize=(7, 7)
 ):
     plt.clf()
     fig, ax = plt.subplots(figsize=figsize)
     y_pos = np.arange(len(name2val))
-    ax.barh(
-        y_pos,
-        name2val.values(),
-        align="center",
-        xerr=yerr,
+    # ax.barh(
+    #     y_pos,
+    #     name2val.values(),
+    #     align="center",
+    #     xerr=yerr,
+    # )
+    ax = sns.barplot(
+        x="y",
+        y="x",
+        ci="ci",
+        data={
+            "x": list(name2val.keys()),
+            "y": list(name2val.values()),
+            "ci": yerr,
+        },
+        ax=ax,
     )
     ax.yaxis.tick_right()
     ax.set_yticks(y_pos)
     ax.set_yticklabels(
-        [f"[{round(weight, 4)}] {name}" for name, weight in name2val.items()],
+        [
+            f"[{' ' if weight > 0 else ''}{round(weight, 4):0.4f}] {name}"
+            for name, weight in name2val.items()
+        ],
     )
     ax.set_title(title)
     if xlim:

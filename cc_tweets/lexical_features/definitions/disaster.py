@@ -1,11 +1,11 @@
 from collections import defaultdict
 from os.path import join
 
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import save_features, visualize_features
 from cc_tweets.lexical_features.bank import Feature, register_feature
 from cc_tweets.utils import load_pkl, save_json
 from cc_tweets.viz import plot_horizontal_bars
-from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from nltk.stem.snowball import SnowballStemmer
 
 NATURAL_DISASTER_WORDS = set(
@@ -52,4 +52,4 @@ def _extract_features(tweets):
     return id2count
 
 
-register_feature(Feature("disaster", _extract_features))
+register_feature(Feature("term.disaster", _extract_features))

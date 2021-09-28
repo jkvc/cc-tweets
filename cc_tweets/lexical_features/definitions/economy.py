@@ -1,10 +1,10 @@
 from collections import defaultdict
 from typing import DefaultDict
 
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from cc_tweets.feature_utils import save_features, visualize_features
 from cc_tweets.lexical_features.bank import Feature, register_feature
 from cc_tweets.utils import load_pkl
-from cc_tweets.experiment_configs import SUBSET_PKL_PATH
 from nltk.stem.snowball import SnowballStemmer
 
 ECONOMY_WORDS = set(
@@ -50,4 +50,4 @@ def _extract_econ_feature(tweets):
     return id2numeconomy
 
 
-register_feature(Feature("economy", _extract_econ_feature))
+register_feature(Feature("term.economy", _extract_econ_feature))
