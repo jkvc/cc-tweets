@@ -1,16 +1,34 @@
 import random
 from collections import defaultdict
+from os import makedirs
 from os.path import join
+from posixpath import dirname
 
+import pandas as pd
+from cc_tweets.experiment_configs import SUBSET_PKL_PATH, SUBSET_WORKING_DIR
 from cc_tweets.feature_utils import save_features
 from cc_tweets.lexical_features.bank import Feature, register_feature
-from cc_tweets.utils import ParallelHandler, load_pkl
+from cc_tweets.log_odds import get_topn_lors
+from cc_tweets.utils import ParallelHandler, load_pkl, save_pkl
 from config import RESOURCES_DIR
-from cc_tweets.experiment_configs import SUBSET_PKL_PATH
+from genericpath import exists
 from sentistrength import PySentiStr
 from tqdm import tqdm
 
 BINS = ["LAP", "HAP", "LAN", "HAN", "NEU"]
+
+
+def get_bin_name(pos_score, neg_score):
+    if pos_score == 2:
+        return "LAP"
+    if pos_score >= 3:
+        return "HAP"
+    if neg_score == -2:
+        return "LAN"
+    if neg_score <= -3:
+        return "HAN"
+    if pos_score == 1 and neg_score == -1:
+        return "NEU"
 
 
 def is_in_bin(bin_name, pos_score, neg_score):
@@ -25,7 +43,7 @@ def is_in_bin(bin_name, pos_score, neg_score):
     if bin_name == "HAP":
         return pos_score >= 3
     if bin_name == "LAN":
-        return neg_score == -1
+        return neg_score == -2
     if bin_name == "HAN":
         return neg_score <= -3
     if bin_name == "NEU":
@@ -60,51 +78,53 @@ for binname in BINS:
     register_feature(Feature(f"senti.{binname}", closure(binname)))
 
 
-# if __name__ == "__main__":
-#     tweets = load_pkl(SUBSET_PKL_PATH)
+if __name__ == "__main__":
+    tweets = load_pkl(SUBSET_PKL_PATH)
 
-#     senti = PySentiStr()
-#     senti.setSentiStrengthPath(
-#         join(RESOURCES_DIR, "sentistrength", "SentiStrength.jar")
-#     )
-#     senti.setSentiStrengthLanguageFolderPath(
-#         join(RESOURCES_DIR, "sentistrength", "data")
-#     )
+    senti = PySentiStr()
+    senti.setSentiStrengthPath(
+        join(RESOURCES_DIR, "sentistrength", "SentiStrength.jar")
+    )
+    senti.setSentiStrengthLanguageFolderPath(
+        join(RESOURCES_DIR, "sentistrength", "data")
+    )
 
-#     tweet_texts = [t["text"] for t in tweets]
-#     scores = senti.getSentiment(tweet_texts, score="dual")
+    tweet_texts = [t["text"] for t in tweets]
+    scores = senti.getSentiment(tweet_texts, score="dual")
 
-#     name2id2score = defaultdict(dict)
-#     bin2tweets = defaultdict(list)
-#     for tweet, score in zip(tweets, scores):
-#         id = tweet["id"]
-#         pos_score, neg_score = score
-#         bins = get_senti_bins(pos_score, neg_score)
-#         for bin in bins:
-#             name2id2score[f"senti_{bin}"][id] = 1
-#             bin2tweets[bin].append(tweet)
-#         name2id2score[f"senti_RAW"][id] = pos_score + neg_score
+    cache_path = join(SUBSET_WORKING_DIR, "senti_out", "bin2tweets.pkl")
+    makedirs(dirname(cache_path), exist_ok=True)
+    if not exists(cache_path):
+        bin2tweets = defaultdict(list)
+        for tweet, score in zip(tweets, scores):
+            binname = get_bin_name(*score)
+            bin2tweets[binname].append(tweet)
+        save_pkl(bin2tweets, cache_path)
+    else:
+        bin2tweets = load_pkl(cache_path)
 
-#     name2id2score = {
-#         k: name2id2score[k]
-#         for k in [
-#             "senti_HAN",
-#             "senti_LAN",
-#             "senti_NEU",
-#             "senti_LAP",
-#             "senti_HAP",
-#             "senti_RAW",
-#         ]
-#     }
-#     save_features(tweets, name2id2score, "senti")
+    for name, (leftbins, rightbins) in [
+        ("han_v_rest", (["HAN"], ["LAN", "LAP", "HAP", "NEU"])),
+        ("han_v_lan", (["HAN"], ["LAN"])),
+        ("pos_v_neg", (["LAP", "HAP"], ["LAN", "HAN"])),
+        ("neu_v_rest", (["NEU"], ["HAN", "LAN", "LAP", "HAP"])),
+    ]:
+        left = []
+        right = []
+        for bin in leftbins:
+            left.extend(bin2tweets[bin])
+        for bin in rightbins:
+            right.extend(bin2tweets[bin])
 
-#     _PRINT_N_SAMPLE_PER_BIN = 10
-#     for bin, tweets in bin2tweets.items():
-#         print("\n\n")
-#         print("-" * 50)
-#         print(bin)
-#         print("-" * 50)
-#         random.shuffle(tweets)
-#         for t in tweets[:_PRINT_N_SAMPLE_PER_BIN]:
-#             print(t["text"])
-#             print("-" * 50)
+        for toktype, ngrams in [
+            ("lemmas", 1),
+            ("stems", 2),
+        ]:
+            print(toktype, ngrams)
+            left_topwords, right_topwords = get_topn_lors(left, right, toktype, ngrams)
+            df = pd.DataFrame()
+            df["left"] = left_topwords
+            df["right"] = right_topwords
+            df.to_csv(
+                join(SUBSET_WORKING_DIR, "senti_out", f"{name}.{ngrams}{toktype}.csv")
+            )
