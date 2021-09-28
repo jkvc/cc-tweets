@@ -43,7 +43,6 @@ NUM_SAMPLES_TO_KEEP_PER_PROC = DATA_SUBSET_SIZE // len(_all_jsonl_paths) + 1
 
 
 def process_tweets_from_raw(jsonl_path):
-    # cache_path = f"{jsonl_path}.{DOWNSIZE_FACTOR}.pkl"
 
     cache_path = join(
         SUBSET_WORKING_DIR, "tweet_subset_cache", f"{basename(jsonl_path)}.pkl"

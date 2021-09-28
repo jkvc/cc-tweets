@@ -4,3 +4,4 @@ wkdir/
 .vscode
 __pycache__
 resources/sentistrength
+resources/
